@@ -1,0 +1,40 @@
+﻿# File: docker-compose.yml
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: householdplanner-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppwd
+      POSTGRES_DB: household
+    ports:
+      - "5432:5432"
+    volumes:
+      - householdplanner-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d household"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: householdplanner-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=household;Username=appuser;Password=apppwd"
+    ports:
+      - "8080:8080"
+
+volumes:
+  householdplanner-data:
