@@ -1,15 +1,17 @@
-﻿// File: Dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
-COPY ["HouseholdPlanner/HouseholdPlanner.csproj", "HouseholdPlanner/"]
-RUN dotnet restore "HouseholdPlanner/HouseholdPlanner.csproj"
+
+# Copy only the project file first, restore dependencies
+COPY ["HouseholdPlanner.csproj", "."]
+RUN dotnet restore "HouseholdPlanner.csproj"
+
+# Now copy the rest of the source
 COPY . .
-WORKDIR "/src/HouseholdPlanner"
 RUN dotnet build "HouseholdPlanner.csproj" -c Release -o /app/build
 
 FROM build AS publish
