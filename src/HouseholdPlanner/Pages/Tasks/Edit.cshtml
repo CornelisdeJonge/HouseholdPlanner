@@ -1,0 +1,115 @@
+﻿@page "{id:int}"
+@model HouseholdPlanner.Pages.Tasks.EditModel
+@using HouseholdPlanner.Data.Entities
+@{
+    ViewData["Title"] = "Edit Task";
+}
+
+<h1 class="mb-4 text-xl font-semibold">Edit Task</h1>
+
+<div class="panel rounded-xl p-4">
+    <form method="post" class="space-y-4">
+        <input type="hidden" asp-for="TaskItem.Id" />
+
+        <div asp-validation-summary="ModelOnly" class="text-sm text-red-600"></div>
+
+        <div>
+            <label asp-for="TaskItem.Name" class="form-label"></label>
+            <input asp-for="TaskItem.Name" class="input mt-1" />
+            <span asp-validation-for="TaskItem.Name" class="text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="TaskItem.Description" class="form-label"></label>
+            <textarea asp-for="TaskItem.Description" rows="3" class="textarea mt-1"></textarea>
+            <span asp-validation-for="TaskItem.Description" class="text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="TaskItem.Priority" class="form-label"></label>
+            <select asp-for="TaskItem.Priority"
+                    asp-items="Html.GetEnumSelectList<TaskPriority>()"
+                    class="select mt-1"></select>
+            <span asp-validation-for="TaskItem.Priority" class="text-sm text-red-600"></span>
+        </div>
+
+        <div>
+            <label asp-for="TaskItem.Deadline" class="form-label"></label>
+            <input asp-for="TaskItem.Deadline" type="date" class="input mt-1" />
+            <span asp-validation-for="TaskItem.Deadline" class="text-sm text-red-600"></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            <a asp-page="./Index" class="btn btn-secondary">Back to list</a>
+        </div>
+    </form>
+</div>
+
+<div class="panel mt-6 rounded-xl p-4">
+    <h2 class="mb-4 text-lg font-semibold">Assignment</h2>
+
+    <form method="post" asp-page-handler="ChangeAssignee" class="space-y-2">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.TaskItem.Id" />
+
+        <label asp-for="TaskItem.AssignedUserId" class="form-label">Assigned to</label>
+        <select asp-for="TaskItem.AssignedUserId"
+                asp-items="Model.UserOptions"
+                class="select"
+                hx-post="?handler=ChangeAssignee"
+                hx-trigger="change"
+                hx-include="closest form"
+                hx-swap="none">
+            <option value="">Unassigned</option>
+        </select>
+    </form>
+</div>
+
+<section class="mt-8">
+    <h2 class="mb-2 text-lg font-semibold">Subtasks</h2>
+
+    <div class="panel rounded-xl p-4">
+        @if (Model.TaskItem.Subtasks == null || !Model.TaskItem.Subtasks.Any())
+        {
+            <p class="text-muted mb-2 text-sm">No subtasks yet.</p>
+        }
+        else
+        {
+            <ul class="space-y-1">
+                @foreach (var sub in Model.TaskItem.Subtasks.OrderBy(s => s.Id))
+                {
+                    <li class="flex items-center">
+                        <form method="post" asp-page-handler="ToggleSubtask" class="inline-flex items-center gap-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="subtaskId" value="@sub.Id" />
+                            <input type="checkbox"
+                                   class="h-5 w-5 rounded"
+                            @(sub.IsDone ? "checked" : "")
+                                   hx-post="?handler=ToggleSubtask"
+                                   hx-trigger="change"
+                                   hx-include="closest form"
+                                   hx-swap="none" />
+                            <span class="text-sm @(sub.IsDone ? "text-muted line-through" : "")">
+                                @sub.Name
+                            </span>
+                        </form>
+                    </li>
+                }
+            </ul>
+        }
+
+        <form method="post" asp-page-handler="AddSubtask" class="mt-4 flex items-center gap-2">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.TaskItem.Id" />
+
+            <input type="text"
+                   name="newSubtaskTitle"
+                   class="input flex-1"
+                   placeholder="New subtask title" />
+            <button type="submit" class="btn btn-secondary">
+                Add subtask
+            </button>
+        </form>
+    </div>
+</section>

@@ -1,0 +1,21 @@
+﻿@page
+@model HouseholdPlanner.Pages.IndexModel
+
+<h1 class="mb-4 text-2xl font-semibold">
+    Household Planner
+</h1>
+
+<p class="text-muted mb-4 text-sm">
+    Tailwind 4 and HTMX are wired up. This is your starting dashboard.
+</p>
+
+<button class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+        hx-get="/healthz"
+        hx-target="#health-status"
+        hx-swap="innerHTML">
+    Check health
+</button>
+
+<div id="health-status"
+     class="text-muted mt-2 text-xs">
+</div>

@@ -1,18 +1,19 @@
 // File: Program.cs
-// Expanded to ensure Razor Pages, static files, and EF Core design-time friendliness are wired.
 using System.Linq;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
+using HouseholdPlanner.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Razor Pages
 builder.Services.AddRazorPages();
 
-// TODO: later – add DbContext with Npgsql here, e.g.:
-// builder.Services.AddDbContext<AppDbContext>(options =>
-//     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register DbContext
+builder.Services.AddDbContext<PlannerDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Health checks (including PostgreSQL) using a custom check
 var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -21,9 +22,16 @@ var defaultConnectionString = builder.Configuration.GetConnectionString("Default
 builder.Services.AddHealthChecks()
     .AddCheck("postgres", new PostgresHealthCheck(defaultConnectionString),
         failureStatus: HealthStatus.Unhealthy,
-        tags: new[] { "db", "postgres" });
+        tags: ["db", "postgres"]);
 
 var app = builder.Build();
+
+// ✅ APPLY EF CORE MIGRATIONS HERE
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<PlannerDbContext>();
+    db.Database.Migrate();   // ← creates tables automatically
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -63,15 +71,11 @@ app.MapHealthChecks("/healthz/db", new HealthCheckOptions
 
 app.Run();
 
-// Custom PostgreSQL health check implementation
-internal sealed class PostgresHealthCheck : IHealthCheck
-{
-    private readonly string _connectionString;
 
-    public PostgresHealthCheck(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
+// Custom PostgreSQL health check implementation
+internal sealed class PostgresHealthCheck(string connectionString) : IHealthCheck
+{
+    private readonly string _connectionString = connectionString;
 
     public async Task<HealthCheckResult> CheckHealthAsync(
         HealthCheckContext context,

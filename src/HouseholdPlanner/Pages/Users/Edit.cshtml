@@ -1,0 +1,119 @@
+﻿@page
+@model HouseholdPlanner.Pages.Users.EditModel
+
+@{
+    ViewData["Title"] = "Edit user";
+    var initialColor = string.IsNullOrWhiteSpace(Model.User?.ColorHex) ? "#3B82F6" : Model.User.ColorHex;
+}
+
+<section class="space-y-4">
+
+    <h1 class="text-lg font-semibold">
+        Edit user
+    </h1>
+
+    <div class="panel rounded-xl p-4">
+        <form method="post" class="space-y-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="User.Id" />
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-sm text-rose-600"></div>
+
+            <div class="space-y-1">
+                <label asp-for="User.Name" class="form-label"></label>
+
+                <input asp-for="User.Name"
+                       class="input mt-1" />
+
+                <span asp-validation-for="User.Name"
+                      class="text-xs text-rose-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="User.ColorHex" class="form-label"></label>
+
+                <div class="flex items-center gap-3">
+                    <input type="color"
+                           value="@initialColor"
+                           class="colorhex-picker h-10 w-14 rounded border border-slate-300 bg-transparent p-1"
+                           aria-label="Pick a color" />
+
+                    <input asp-for="User.ColorHex"
+                           type="text"
+                           placeholder="#3B82F6"
+                           class="input colorhex-text flex-1" />
+                </div>
+
+                <span asp-validation-for="User.ColorHex"
+                      class="text-xs text-rose-600"></span>
+            </div>
+
+            <div class="space-y-1">
+                <label asp-for="User.SortOrder" class="form-label"></label>
+
+                <input asp-for="User.SortOrder"
+                       type="number"
+                       class="input mt-1" />
+
+                <span asp-validation-for="User.SortOrder"
+                      class="text-xs text-rose-600"></span>
+
+                <p class="text-muted text-xs">
+                    Optional. Lower numbers appear first in lists.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input asp-for="User.IsActive"
+                       class="h-4 w-4 rounded border-slate-300 text-emerald-600" />
+
+                <label asp-for="User.IsActive"
+                       class="text-sm"></label>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button type="submit" class="btn btn-primary">
+                    Save
+                </button>
+
+                <a asp-page="Index" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            function wireColorHexSync(root) {
+                var pickers = root.querySelectorAll('input.colorhex-picker');
+                pickers.forEach(function (picker) {
+                    var container = picker.closest('.flex');
+                    if (!container) return;
+
+                    var text = container.querySelector('input.colorhex-text');
+                    if (!text) return;
+
+                    picker.addEventListener('input', function () {
+                        text.value = picker.value;
+                    });
+
+                    text.addEventListener('input', function () {
+                        var v = text.value.trim();
+                        var hex6 = /^#[0-9A-Fa-f]{6}$/;
+                        if (hex6.test(v)) {
+                            picker.value = v;
+                        }
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                wireColorHexSync(document);
+            });
+        })();
+    </script>
+}

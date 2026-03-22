@@ -1,0 +1,104 @@
+﻿@page
+@model HouseholdPlanner.Pages.Users.IndexModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<section class="space-y-4">
+
+    <div class="flex items-center justify-between">
+        <h1 class="text-lg font-semibold">
+            Users
+        </h1>
+
+        <a asp-page="Create" class="btn btn-primary">
+            + Add user
+        </a>
+    </div>
+
+    @if (Model.Users.Count == 0)
+    {
+        <p class="text-muted text-sm">
+            No users yet. Create the first user for your household.
+        </p>
+    }
+    else
+    {
+        <div class="panel overflow-x-auto rounded-md">
+            <table class="table min-w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Color</th>
+                        <th class="px-4 py-2">Sort order</th>
+                        <th class="px-4 py-2">Active</th>
+                        <th class="px-4 py-2 text-right">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td class="px-4 py-2">
+                                @user.Name
+                            </td>
+
+                            <td class="px-4 py-2">
+                                @if (!string.IsNullOrWhiteSpace(user.ColorHex))
+                                {
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-block h-4 w-4 rounded-full border border-slate-300"
+                                              style="background-color: @user.ColorHex;">
+                                        </span>
+                                        <span class="text-muted text-xs">@user.ColorHex</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted text-xs">—</span>
+                                }
+                            </td>
+
+                            <td class="px-4 py-2">
+                                @(user.SortOrder?.ToString() ?? "—")
+                            </td>
+
+                            <td class="px-4 py-2">
+                                @if (user.IsActive)
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600">
+                                        Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inline-flex items-center rounded-full bg-slate-400/10 px-2 py-0.5 text-xs font-medium text-slate-600">
+                                        Inactive
+                                    </span>
+                                }
+                            </td>
+
+                            <td class="px-4 py-2 text-right">
+                                <div class="inline-flex gap-2">
+                                    <a asp-page="Edit"
+                                           asp-route-id="@user.Id"
+                                           class="text-xs font-medium text-sky-700 hover:text-sky-900">
+                                        Edit
+                                    </a>
+
+                                    <a asp-page="Delete"
+                                           asp-route-id="@user.Id"
+                                           class="text-xs font-medium text-rose-700 hover:text-rose-900">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

@@ -1,4 +1,4 @@
-﻿# File: docker-compose.yml
+# File: docker-compose.yml
 version: "3.9"
 
 services:
@@ -21,10 +21,11 @@ services:
       retries: 5
       start_period: 10s
 
-  app:
+  householdplanner:  # VS likes the service name to match the project name
+    image: ${DOCKER_REGISTRY-}householdplanner
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: src/HouseholdPlanner/Dockerfile
     container_name: householdplanner-app
     depends_on:
       postgres:

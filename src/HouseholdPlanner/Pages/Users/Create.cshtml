@@ -1,0 +1,143 @@
+﻿@page
+@model HouseholdPlanner.Pages.Users.CreateModel
+
+@{
+    ViewData["Title"] = "Create user";
+}
+
+<section class="space-y-4">
+
+    <h1 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+        Create user
+    </h1>
+
+    <form method="post" class="space-y-4">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly"
+             class="text-sm text-rose-600 dark:text-rose-300"></div>
+
+        <!-- Name -->
+        <div class="space-y-1">
+            <label asp-for="User.Name"
+                   class="block text-sm font-medium text-slate-700 dark:text-slate-300"></label>
+
+            <input asp-for="User.Name"
+                   class="mt-1 block w-full rounded-md border
+            border-slate-300 bg-slate-50 text-slate-900
+            dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100
+            px-3 py-2 text-sm" />
+
+            <span asp-validation-for="User.Name"
+                  class="text-xs text-rose-600 dark:text-rose-300"></span>
+        </div>
+
+        <!-- Color picker + hex -->
+        <div class="space-y-1">
+            <label asp-for="User.ColorHex"
+                   class="block text-sm font-medium text-slate-700 dark:text-slate-300"></label>
+
+            <div class="flex items-center gap-3">
+
+                <!-- Color picker -->
+                <input asp-for="User.ColorHex"
+                       type="color"
+                       class="colorhex-picker h-10 w-14 rounded border
+                border-slate-300 bg-slate-50
+                dark:border-slate-700 dark:bg-slate-800 p-1" />
+
+                <!-- Hex textbox -->
+                <input asp-for="User.ColorHex"
+                       type="text"
+                       placeholder="#3B82F6"
+                       class="colorhex-text flex-1 rounded-md border
+                border-slate-300 bg-slate-50 text-slate-900
+                dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100
+                px-3 py-2 text-sm" />
+            </div>
+
+            <span asp-validation-for="User.ColorHex"
+                  class="text-xs text-rose-600 dark:text-rose-300"></span>
+        </div>
+
+        <!-- Sort Order -->
+        <div class="space-y-1">
+            <label asp-for="User.SortOrder"
+                   class="block text-sm font-medium text-slate-700 dark:text-slate-300"></label>
+
+            <input asp-for="User.SortOrder"
+                   type="number"
+                   class="mt-1 block w-full rounded-md border
+            border-slate-300 bg-slate-50 text-slate-900
+            dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100
+            px-3 py-2 text-sm" />
+
+            <span asp-validation-for="User.SortOrder"
+                  class="text-xs text-rose-600 dark:text-rose-300"></span>
+
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+                Optional. Lower numbers appear first in lists.
+            </p>
+        </div>
+
+        <!-- Active -->
+        <div class="flex items-center gap-2">
+            <input asp-for="User.IsActive"
+                   class="h-4 w-4 rounded border-slate-300 bg-white text-emerald-600
+            dark:border-slate-700 dark:bg-slate-800 dark:text-emerald-500" />
+
+            <label asp-for="User.IsActive"
+                   class="text-sm text-slate-700 dark:text-slate-300"></label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="inline-flex items-center rounded-md
+                bg-emerald-600 text-white hover:bg-emerald-500
+                dark:bg-emerald-500 dark:hover:bg-emerald-400
+                px-4 py-2 text-sm font-medium">
+                Save
+            </button>
+
+            <a asp-page="Index"
+                   class="text-sm text-slate-700 hover:text-slate-900
+                dark:text-slate-300 dark:hover:text-slate-100">
+                Cancel
+            </a>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        (function () {
+            function wireColorHexSync(root) {
+                var pickers = root.querySelectorAll('input.colorhex-picker');
+                pickers.forEach(function (picker) {
+                    var container = picker.closest('.flex');
+                    if (!container) return;
+
+                    var text = container.querySelector('input.colorhex-text');
+                    if (!text) return;
+
+                    picker.addEventListener('input', function () {
+                        text.value = picker.value;
+                    });
+
+                    text.addEventListener('input', function () {
+                        var v = text.value.trim();
+                        var hex6 = /^#[0-9A-Fa-f]{6}$/;
+                        if (hex6.test(v)) {
+                            picker.value = v;
+                        }
+                    });
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                wireColorHexSync(document);
+            });
+        })();
+    </script>
+}

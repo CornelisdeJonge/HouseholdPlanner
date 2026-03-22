@@ -1,0 +1,197 @@
+version: 1.0
+
+phases:
+  - id: P1
+    title: Foundation (Visual Studio setup, .NET 10, PostgreSQL)
+    steps:
+      - id: P1.1
+        title: Create project in Visual Studio (target .NET 10)
+        description: >
+          In Visual Studio 2026, create an ASP.NET Core Web App (Razor Pages) targeting net10.0.
+          Ensure the ASP.NET and web development workload is installed. Confirm the project builds
+          and runs (Kestrel dev server). Add a basic /healthz endpoint for liveness.
+        acceptance:
+          - Project targets net10.0 and compiles without warnings.
+          - Running the app returns 200 OK from /healthz.
+
+      - id: P1.2
+        title: Add core dependencies (.NET 10 wave + EF Core + Npgsql + HTMX/Tailwind)
+        description: >
+          Add the following packages (10.x wave where applicable): Microsoft.EntityFrameworkCore,
+          Microsoft.EntityFrameworkCore.Design, Microsoft.EntityFrameworkCore.Tools, and
+          Npgsql.EntityFrameworkCore.PostgreSQL. Add Tailwind (or minimal CSS) and wire HTMX for
+          progressive enhancement. Keep JS minimal. Confirm design-time EF tools work.
+        acceptance:
+          - EF Core and Npgsql packages installed and restore cleanly.
+          - dotnet-ef (or Package Manager Console) recognizes the project for migrations.
+          - HTMX reachable in the layout; Tailwind (or CSS) loads without errors.
+
+      - id: P1.3
+        title: Docker & Compose with PostgreSQL (dev database)
+        description: >
+          Create a multi-stage Dockerfile for the app (Kestrel on 8080). Create docker-compose.yml
+          with two services: app and postgres. The postgres service uses the official Postgres image,
+          sets POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, exposes 5432, and persists a volume.
+          The app service depends_on postgres and receives a connection string via environment
+          (e.g., Host=postgres;Port=5432;Database=household;Username=appuser;Password=apppwd).
+          Optionally add a DB health check (AspNetCore.HealthChecks.NpgSql) and map /healthz/db.
+        acceptance:
+          - docker compose up brings up both containers; logs show app connects successfully.
+          - A database volume persists data across restarts.
+          - /healthz returns 200; if DB health added, /healthz/db reports Healthy.
+
+      - id: P1.4
+        title: Base layout & navigation
+        description: >
+          Implement top navigation (Week, Users, Tasks, Meals, Availability). Establish responsive,
+          touch-friendly layout tuned for 720x1280 portrait (Raspberry Pi later).
+        acceptance:
+          - Navigation links work with no console errors.
+          - No horizontal scroll on portrait; text legible; controls are finger-friendly.
+
+      - id: P1.5
+        title: Data model & initial migrations (PostgreSQL)
+        description: >
+          Implement entities (User, Task, Subtask, AvailabilitySlot, TaskSchedule, Meal, MealTag,
+          MealTagMap, MealPlan) and DbContext. Create and apply EF Core migrations to PostgreSQL.
+          Seed: 3 users, a few tasks, 5 meals with tags. Use UTC storage and Monday as start-of-week.
+        acceptance:
+          - Migrations apply to the Postgres DB in compose; schema exists.
+          - Seed data visible via a temporary debug/page or quick query.
+          - App reads/writes the DB without errors.
+
+ 
+- id: P2
+  title: Users & Tasks
+  steps:
+    - id: P2.1
+      title: Users management (CRUD)
+      description: >
+        Manage user name, color, sort order with validation and CSRF.
+      acceptance:
+        - Create/edit/delete works; invalid input is rejected; pages return 200.
+
+    - id: P2.2
+      title: Tasks management (CRUD + assign + subtasks)
+      description: >
+        Tasks: name, description; optional assigned user, priority, deadline; subtasks one-to-many.
+        Inline actions with HTMX (toggle subtask done, change assignee).
+      acceptance:
+        - All operations persist correctly.
+        - Inline HTMX updates respond quickly (<250ms locally) with no JS errors.
+
+    - id: P2.3
+      title: Optimize CSS (Tailwind v4) with Light/Dark modes
+      description: >
+        Consolidate styles under Tailwind v4. Ensure consistent component tokens (panels, tables,
+        buttons, form fields) and a single dark-mode strategy (e.g., class or data-attribute).
+        Provide a header toggle that persists the choice (cookie/localStorage). Remove hard-coded
+        dark-only colors; use semantic utilities and variables where needed.
+      acceptance:
+        - Light and dark modes render legibly across Layout, Week, Users, Tasks, Meals, Availability.
+        - No hard-coded hex values that break either theme (exceptions documented).
+        - One consistent dark-mode mechanism; toggle persists across reloads.
+        - Tailwind build runs in Docker and in local debug builds without manual steps.
+
+    # NEW: moved from prior P2.3
+    - id: P2.4
+      title: Weekly task summary
+      description: >
+        Reusable component computing “Tasks this week”: overdue, due this week, unassigned.
+        Render in side column of Week view.
+      acceptance:
+        - Counts accurate; clicking an item opens task details.
+
+
+  - id: P3
+    title: Calendar & Availability
+    steps:
+      - id: P3.1
+        title: Availability management
+        description: >
+          Manage personal time-slot availability (Start–End) per user; weekly recurrence as later enhancement.
+        acceptance:
+          - Slots can be created/listed/deleted and persist in PostgreSQL.
+
+      - id: P3.2
+        title: Week view (calendar grid)
+        description: >
+          Week grid Mon–Sun, hours 06:00–22:00 (configurable). Next/Prev week navigation.
+        acceptance:
+          - Renders current week; navigation works; no console errors.
+
+      - id: P3.3
+        title: Schedule tasks on calendar
+        description: >
+          Tap a task to schedule a time block (default 60 min; snap to 30). Warn if outside availability;
+          allow overlaps with visual highlight for same-user double-booking.
+        acceptance:
+          - Create/edit/delete TaskSchedule works; blocks render on the grid.
+          - Outside-availability shows non-blocking warning.
+          - Overlap on same user shows a clear highlight/border.
+
+      - id: P3.4
+        title: Personalized filter
+        description: >
+          Top chip selector for user filter (no auth). Persist choice via cookie or querystring.
+          Filters calendar and weekly summary.
+        acceptance:
+          - Switching user updates views and persists across reloads.
+
+  - id: P4
+    title: Meals
+    steps:
+      - id: P4.1
+        title: Meals management (CRUD + tags)
+        description: >
+          Manage meals with name, description, and tags (Protein/Carb/Season/Duration/Leftover/Other).
+          Tag editor supports suggestions and free text.
+        acceptance:
+          - Meals and tags persist; filtering by tag works.
+
+      - id: P4.2
+        title: Weekly meal planning
+        description: >
+          Plan meals for the next week. Show each day’s meal at the bottom of the day in the Week view.
+        acceptance:
+          - Meals appear on the correct day; replacing/clearing persists.
+
+      - id: P4.3
+        title: Meal suggestion (basic)
+        description: >
+          Suggest a 7-day plan balancing tags: avoid same Protein on adjacent days, prefer Season matches,
+          prefer non-leftovers first, and balance Carbs across the week when possible. Manual overrides allowed.
+        acceptance:
+          - Produces a full week suggestion; user can accept/apply.
+
+  - id: P5
+    title: Polish & Deploy
+    steps:
+      - id: P5.1
+        title: Touch polish for Raspberry Pi
+        description: >
+          Ensure ≥56–64px touch targets (~7–9mm), increase tap areas, and fine-tune portrait 720x1280 layout.
+        acceptance:
+          - Usable in portrait simulator and (if available) on device.
+
+      - id: P5.2
+        title: PWA/Kiosk readiness (optional)
+        description: >
+          Add web manifest and minimal service worker for offline shell. Provide kiosk guidance for Raspberry Pi Chromium.
+        acceptance:
+          - Launches fullscreen; navigation stable offline (basic shell).
+
+      - id: P5.3
+        title: Ugreen DXP4800 Plus deployment
+        description: >
+          Build and run in container with bind-mounted /app/data (or app config volume), port 8080. Nightly DB backup strategy.
+        acceptance:
+          - App accessible on LAN; data survives container restarts.
+
+      - id: P5.4
+        title: Tests + Docs
+        description: >
+          Unit tests for domain logic; simple integration tests; smoke tests for main routes.
+          Documentation for setup, Docker run, and backup/restore.
+        acceptance:
+          - CI/tests green; docs complete and accurate.
