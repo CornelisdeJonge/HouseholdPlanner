@@ -6,8 +6,7 @@
 }
 
 <section class="space-y-4">
-
-    <h1 class="text-lg font-semibold">
+    <h1 class="page-title">
         Delete user
     </h1>
 
@@ -15,48 +14,48 @@
         Are you sure you want to delete this user? This may affect task assignments and availability.
     </p>
 
-    <div class="panel rounded-md p-4 text-sm">
-        <dl class="space-y-3">
+    <section class="panel">
+        <div class="panel-body text-sm">
+            <dl class="space-y-3">
+                <div>
+                    <dt class="label mb-0">Name</dt>
+                    <dd>@Model.User.Name</dd>
+                </div>
 
-            <div>
-                <dt class="form-label mb-0">Name</dt>
-                <dd>@Model.User.Name</dd>
-            </div>
+                <div>
+                    <dt class="label mb-0">Color</dt>
+                    <dd>
+                        @if (!string.IsNullOrWhiteSpace(Model.User.ColorHex))
+                        {
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block h-4 w-4 rounded-full border"
+                                      style="background-color: @Model.User.ColorHex; border-color: var(--color-border);">
+                                </span>
 
-            <div>
-                <dt class="form-label mb-0">Color</dt>
-                <dd>
-                    @if (!string.IsNullOrWhiteSpace(Model.User.ColorHex))
-                    {
-                        <div class="flex items-center gap-2">
-                            <span class="inline-block h-4 w-4 rounded-full border border-slate-300"
-                                  style="background-color: @Model.User.ColorHex;">
-                            </span>
+                                <span class="text-muted text-xs">
+                                    @Model.User.ColorHex
+                                </span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted text-xs">—</span>
+                        }
+                    </dd>
+                </div>
 
-                            <span class="text-muted text-xs">
-                                @Model.User.ColorHex
-                            </span>
-                        </div>
-                    }
-                    else
-                    {
-                        <span class="text-muted text-xs">—</span>
-                    }
-                </dd>
-            </div>
+                <div>
+                    <dt class="label mb-0">Sort order</dt>
+                    <dd>@(Model.User.SortOrder?.ToString() ?? "—")</dd>
+                </div>
 
-            <div>
-                <dt class="form-label mb-0">Sort order</dt>
-                <dd>@(Model.User.SortOrder?.ToString() ?? "—")</dd>
-            </div>
-
-            <div>
-                <dt class="form-label mb-0">Active</dt>
-                <dd>@(Model.User.IsActive ? "Yes" : "No")</dd>
-            </div>
-
-        </dl>
-    </div>
+                <div>
+                    <dt class="label mb-0">Active</dt>
+                    <dd>@(Model.User.IsActive ? "Yes" : "No")</dd>
+                </div>
+            </dl>
+        </div>
+    </section>
 
     <form method="post" class="flex items-center gap-3">
         @Html.AntiForgeryToken()
@@ -69,5 +68,4 @@
             Cancel
         </a>
     </form>
-
 </section>

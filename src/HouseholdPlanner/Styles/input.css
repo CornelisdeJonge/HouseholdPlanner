@@ -1,189 +1,221 @@
 ﻿@import "tailwindcss";
 
-/* -------------------------------
-   Custom Theme System
-   ------------------------------- */
+/* Compatibility bridge:
+   If any dark:* utilities remain, they now follow the SAME root-class strategy. */
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
-@layer base {
-    .theme-light,
-    .theme-light body {
-        @apply bg-white text-slate-900;
-    }
-
-    .theme-dark,
-    .theme-dark body {
-        @apply bg-slate-900 text-slate-100;
-    }
+/* Optional but recommended: tell the browser both schemes exist */
+:root {
+    color-scheme: light dark;
+    /* Radius / motion / sizing tokens if you want them centralized */
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
 }
 
-@layer components {
-    /* Header */
-    .theme-light .app-header {
-        @apply border-b border-slate-200 bg-white;
+/* Explicit light theme */
+html.theme-light {
+    color-scheme: light;
+    --color-bg: #f8fafc;
+    --color-surface: #ffffff;
+    --color-surface-muted: #f1f5f9;
+    --color-text: #0f172a;
+    --color-text-muted: #475569;
+    --color-border: #dbe4ee;
+    --color-primary: #2563eb;
+    --color-primary-hover: #1d4ed8;
+    --color-primary-text: #ffffff;
+    --color-secondary: #e2e8f0;
+    --color-secondary-hover: #cbd5e1;
+    --color-secondary-text: #0f172a;
+    --color-input-bg: #ffffff;
+    --color-input-border: #cbd5e1;
+    --color-input-border-focus: #60a5fa;
+    --color-table-head: #f8fafc;
+    --color-table-row-hover: #f8fafc;
+    --color-danger: #dc2626;
+    --color-danger-hover: #b91c1c;
+}
+
+/* Explicit dark theme */
+html.theme-dark {
+    color-scheme: dark;
+    --color-bg: #0f172a;
+    --color-surface: #111827;
+    --color-surface-muted: #1f2937;
+    --color-text: #e5e7eb;
+    --color-text-muted: #94a3b8;
+    --color-border: #334155;
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-primary-text: #eff6ff;
+    --color-secondary: #334155;
+    --color-secondary-hover: #475569;
+    --color-secondary-text: #e2e8f0;
+    --color-input-bg: #0f172a;
+    --color-input-border: #475569;
+    --color-input-border-focus: #60a5fa;
+    --color-table-head: #1e293b;
+    --color-table-row-hover: #172033;
+    --color-danger: #ef4444;
+    --color-danger-hover: #dc2626;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* Shared app shell */
+.app-shell {
+    @apply min-h-screen;
+}
+
+.app-header {
+    @apply border-b;
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+.app-header-inner {
+    @apply mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4;
+}
+
+.app-main {
+    @apply mx-auto max-w-7xl px-6 py-8;
+}
+
+/* Shared text helpers */
+.text-muted {
+    color: var(--color-text-muted);
+}
+
+.page-title {
+    @apply text-2xl font-semibold tracking-tight;
+}
+
+.page-subtitle {
+    @apply mt-1 text-sm;
+    color: var(--color-text-muted);
+}
+
+/* Panel / card */
+.panel {
+    @apply rounded-2xl border shadow-sm;
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.panel-body {
+    @apply p-6;
+}
+
+/* Buttons */
+.btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150 focus:outline-none focus:ring-2 disabled:pointer-events-none disabled:opacity-50;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-primary-text);
+}
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-hover);
     }
 
-    .theme-dark .app-header {
-        @apply border-b border-slate-800 bg-slate-900/95;
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-text);
+}
+
+    .btn-secondary:hover {
+        background-color: var(--color-secondary-hover);
     }
 
-    /* Muted text */
-    .theme-light .text-muted {
-        @apply text-slate-500;
+.btn-danger {
+    background-color: var(--color-danger);
+    color: #ffffff;
+}
+
+    .btn-danger:hover {
+        background-color: var(--color-danger-hover);
     }
 
-    .theme-dark .text-muted {
-        @apply text-slate-400;
+/* Form fields */
+.label {
+    @apply mb-1 block text-sm font-medium;
+    color: var(--color-text);
+}
+
+.input,
+.select,
+.textarea {
+    @apply w-full rounded-lg border px-3 py-2 transition outline-none;
+    background-color: var(--color-input-bg);
+    color: var(--color-text);
+    border-color: var(--color-input-border);
+}
+
+    .input::placeholder,
+    .textarea::placeholder {
+        color: var(--color-text-muted);
     }
 
-    /* Navigation */
-    .nav-link {
-        @apply flex-1 rounded-lg px-3 py-3 text-center text-sm font-medium transition-colors;
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+        border-color: var(--color-input-border-focus);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
     }
 
-    .theme-light .nav-link {
-        @apply text-slate-600 hover:bg-slate-200;
+.validation {
+    @apply mt-1 block text-sm;
+    color: var(--color-danger);
+}
+
+/* Table */
+.table-wrap {
+    @apply overflow-x-auto rounded-2xl border;
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+}
+
+.table {
+    @apply min-w-full text-sm;
+    color: var(--color-text);
+}
+
+    .table thead th {
+        @apply px-4 py-3 text-left font-medium;
+        background-color: var(--color-table-head);
+        color: var(--color-text);
     }
 
-    .theme-dark .nav-link {
-        @apply text-slate-200 hover:bg-slate-800/70;
+    .table tbody td {
+        @apply px-4 py-3 align-top;
+        border-top: 1px solid var(--color-border);
     }
 
-    .nav-link-active {
-        @apply font-semibold text-white;
+    .table tbody tr:hover {
+        background-color: var(--color-table-row-hover);
     }
 
-    .theme-light .nav-link-active {
-        @apply bg-slate-800;
-    }
+/* Small badges / status pills if you use them */
+.badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium;
+    background-color: var(--color-surface-muted);
+    color: var(--color-text);
+}
 
-    .theme-dark .nav-link-active {
-        @apply bg-slate-700;
-    }
-
-    /* Theme toggle */
-    .theme-toggle {
-        @apply rounded-md border px-2 py-1 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
-    }
-
-    .theme-light .theme-toggle {
-        @apply border-slate-300 bg-slate-200 text-slate-800 hover:bg-slate-300 focus:ring-slate-400 focus:ring-offset-white;
-    }
-
-    .theme-dark .theme-toggle {
-        @apply border-slate-700 bg-slate-800 text-slate-200 hover:bg-slate-700 focus:ring-slate-600 focus:ring-offset-slate-900;
-    }
-
-    /* Generic panel */
-    .theme-light .panel {
-        @apply border border-slate-300 bg-white text-slate-900;
-    }
-
-    .theme-dark .panel {
-        @apply border border-slate-700 bg-slate-900/60 text-slate-100;
-    }
-
-    /* Buttons */
-    .btn {
-        @apply inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
-    }
-
-    .theme-light .btn {
-        @apply border-slate-300 bg-white text-slate-900 hover:bg-slate-50 focus:ring-slate-400 focus:ring-offset-white;
-    }
-
-    .theme-dark .btn {
-        @apply border-slate-700 bg-slate-800 text-slate-100 hover:bg-slate-700 focus:ring-slate-600 focus:ring-offset-slate-900;
-    }
-
-    .btn-primary {
-        @apply border-transparent bg-blue-600 text-white hover:bg-blue-700;
-    }
-
-    .theme-dark .btn-primary {
-        @apply bg-blue-500 hover:bg-blue-600;
-    }
-
-    .btn-secondary {
-        @apply bg-slate-200 text-slate-900 hover:bg-slate-300;
-    }
-
-    .theme-dark .btn-secondary {
-        @apply bg-slate-700 text-slate-100 hover:bg-slate-600;
-    }
-
-    .btn-danger {
-        @apply bg-red-600 text-white hover:bg-red-700;
-    }
-
-    .theme-dark .btn-danger {
-        @apply bg-red-500 hover:bg-red-600;
-    }
-
-    /* Forms */
-    .form-label {
-        @apply mb-1 block text-sm font-medium;
-    }
-
-    .theme-light .form-label {
-        @apply text-slate-800;
-    }
-
-    .theme-dark .form-label {
-        @apply text-slate-200;
-    }
-
-    .input,
-    .select,
-    .textarea {
-        @apply w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2;
-    }
-
-    .theme-light .input,
-    .theme-light .select,
-    .theme-light .textarea {
-        @apply border-slate-300 bg-white text-slate-900 focus:ring-blue-400;
-    }
-
-    .theme-dark .input,
-    .theme-dark .select,
-    .theme-dark .textarea {
-        @apply border-slate-700 bg-slate-900/60 text-slate-100 focus:ring-blue-500;
-    }
-
-    /* Tables */
-    .table {
-        @apply w-full border-collapse text-sm;
-    }
-
-        .table thead th {
-            @apply text-left font-semibold;
-        }
-
-    .theme-light .table thead th {
-        @apply bg-slate-100 text-slate-800;
-    }
-
-    .theme-dark .table thead th {
-        @apply bg-slate-800 text-slate-100;
-    }
-
-    .table tbody tr {
-        @apply border-b;
-    }
-
-    .theme-light .table tbody tr {
-        @apply border-slate-200;
-    }
-
-    .theme-dark .table tbody tr {
-        @apply border-slate-800;
-    }
-
-    .theme-light .table tbody tr:hover {
-        @apply bg-slate-50;
-    }
-
-    .theme-dark .table tbody tr:hover {
-        @apply bg-slate-800/60;
-    }
+/* Link-style actions */
+.action-link {
+    @apply text-sm font-medium underline-offset-4 hover:underline;
+    color: var(--color-primary);
 }

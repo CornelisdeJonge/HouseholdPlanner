@@ -1,117 +1,116 @@
 ﻿@page
 @model HouseholdPlanner.Pages.Tasks.IndexModel
+
 @{
     ViewData["Title"] = "Tasks";
 }
 
-<div class="mb-4 flex items-center justify-between">
-    <h1 class="text-xl font-semibold">Tasks</h1>
+<section class="space-y-4">
+    <div class="flex items-center justify-between">
+        <h1 class="page-title">Tasks</h1>
 
-    <a asp-page="./Create" class="btn btn-primary">
-        New Task
-    </a>
-</div>
-
-@if (!Model.Tasks.Any())
-{
-    <p class="text-muted">
-        No tasks yet. Create the first task for your household.
-    </p>
-}
-else
-{
-    <div class="panel overflow-x-auto rounded-md">
-        <table class="table min-w-full">
-            <thead>
-                <tr>
-                    <th class="px-3 py-2">Name</th>
-                    <th class="px-3 py-2">Assigned</th>
-                    <th class="px-3 py-2">Priority</th>
-                    <th class="px-3 py-2">Deadline</th>
-                    <th class="px-3 py-2">Subtasks</th>
-                    <th class="px-3 py-2"></th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var task in Model.Tasks)
-                {
-                    var doneCount = task.Subtasks.Count(s => s.IsDone);
-                    var totalCount = task.Subtasks.Count;
-
-                    <tr>
-                        <td class="px-3 py-2 align-top">
-                            <div class="font-medium">@task.Name</div>
-
-                            @if (!string.IsNullOrWhiteSpace(task.Description))
-                            {
-                                <div class="text-muted text-xs">@task.Description</div>
-                            }
-                        </td>
-
-                        <td class="px-3 py-2 align-top">
-                            @if (task.AssignedUser is null)
-                            {
-                                <span class="text-muted text-xs">Unassigned</span>
-                            }
-                            else
-                            {
-                                <span class="inline-flex items-center rounded-full border border-current/15 px-2 py-0.5 text-xs font-medium">
-                                    @task.AssignedUser.Name
-                                </span>
-                            }
-                        </td>
-
-                        <td class="px-3 py-2 align-top">
-                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold
-                                @(task.Priority == HouseholdPlanner.Data.Entities.TaskPriority.Critical
-                                                                      ? "bg-red-100 text-red-800"
-                                                                      : task.Priority == HouseholdPlanner.Data.Entities.TaskPriority.High
-                                                                          ? "bg-orange-100 text-orange-800"
-                                                                          : task.Priority == HouseholdPlanner.Data.Entities.TaskPriority.Low
-                                                                              ? "bg-slate-100 text-slate-800"
-                                                                              : "bg-blue-100 text-blue-800")">
-                                @task.Priority
-                            </span>
-                        </td>
-
-                        <td class="px-3 py-2 align-top">
-                            @if (task.Deadline.HasValue)
-                            {
-                                @task.Deadline.Value.ToString("yyyy-MM-dd")
-                            }
-                            else
-                            {
-                                <span class="text-muted text-xs">None</span>
-                            }
-                        </td>
-
-                        <td class="px-3 py-2 align-top text-xs">
-                            @if (totalCount == 0)
-                            {
-                                <span class="text-muted">No subtasks</span>
-                            }
-                            else
-                            {
-                                <span>@doneCount / @totalCount done</span>
-                            }
-                        </td>
-
-                        <td class="whitespace-nowrap px-3 py-2 text-right align-top">
-                            <a asp-page="./Edit"
-                                   asp-route-id="@task.Id"
-                                   class="mr-3 text-sm text-blue-600 hover:text-blue-800">
-                                Edit
-                            </a>
-                            <a asp-page="./Delete"
-                                   asp-route-id="@task.Id"
-                                   class="text-sm text-red-600 hover:text-red-800">
-                                Delete
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <a asp-page="./Create" class="btn btn-primary">
+            New task
+        </a>
     </div>
-}
+
+    @if (!Model.Tasks.Any())
+    {
+        <p class="text-muted text-sm">
+            No tasks yet. Create the first task for your household.
+        </p>
+    }
+    else
+    {
+        <div class="table-wrap">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Assigned</th>
+                        <th>Priority</th>
+                        <th>Deadline</th>
+                        <th>Subtasks</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var task in Model.Tasks)
+                    {
+                        var doneCount = task.Subtasks.Count(s => s.IsDone);
+                        var totalCount = task.Subtasks.Count;
+
+                        <tr>
+                            <td>
+                                <div class="font-medium">@task.Name</div>
+
+                                @if (!string.IsNullOrWhiteSpace(task.Description))
+                                {
+                                    <div class="text-muted text-xs">@task.Description</div>
+                                }
+                            </td>
+
+                            <td>
+                                @if (task.AssignedUser is null)
+                                {
+                                    <span class="text-muted text-xs">Unassigned</span>
+                                }
+                                else
+                                {
+                                    <span class="badge">
+                                        @task.AssignedUser.Name
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="badge">
+                                    @task.Priority
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (task.Deadline.HasValue)
+                                {
+                                    @task.Deadline.Value.ToString("yyyy-MM-dd")
+                                }
+                                else
+                                {
+                                    <span class="text-muted text-xs">None</span>
+                                }
+                            </td>
+
+                            <td class="text-sm">
+                                @if (totalCount == 0)
+                                {
+                                    <span class="text-muted">No subtasks</span>
+                                }
+                                else
+                                {
+                                    <span>@doneCount / @totalCount done</span>
+                                }
+                            </td>
+
+                            <td class="whitespace-nowrap text-right">
+                                <div class="inline-flex gap-3">
+                                    <a asp-page="./Edit"
+                                           asp-route-id="@task.Id"
+                                           class="action-link">
+                                        Edit
+                                    </a>
+
+                                    <a asp-page="./Delete"
+                                           asp-route-id="@task.Id"
+                                           class="action-link">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

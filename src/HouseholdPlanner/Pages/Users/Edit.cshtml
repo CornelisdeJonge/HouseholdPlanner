@@ -7,82 +7,79 @@
 }
 
 <section class="space-y-4">
-
-    <h1 class="text-lg font-semibold">
+    <h1 class="page-title">
         Edit user
     </h1>
 
-    <div class="panel rounded-xl p-4">
-        <form method="post" class="space-y-4">
-            @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="User.Id" />
+    <section class="panel">
+        <div class="panel-body">
+            <form method="post" class="space-y-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="User.Id" />
 
-            <div asp-validation-summary="ModelOnly"
-                 class="text-sm text-rose-600"></div>
+                <div asp-validation-summary="ModelOnly" class="validation"></div>
 
-            <div class="space-y-1">
-                <label asp-for="User.Name" class="form-label"></label>
+                <div class="space-y-1">
+                    <label asp-for="User.Name" class="label"></label>
 
-                <input asp-for="User.Name"
-                       class="input mt-1" />
+                    <input asp-for="User.Name" class="input" />
 
-                <span asp-validation-for="User.Name"
-                      class="text-xs text-rose-600"></span>
-            </div>
-
-            <div class="space-y-1">
-                <label asp-for="User.ColorHex" class="form-label"></label>
-
-                <div class="flex items-center gap-3">
-                    <input type="color"
-                           value="@initialColor"
-                           class="colorhex-picker h-10 w-14 rounded border border-slate-300 bg-transparent p-1"
-                           aria-label="Pick a color" />
-
-                    <input asp-for="User.ColorHex"
-                           type="text"
-                           placeholder="#3B82F6"
-                           class="input colorhex-text flex-1" />
+                    <span asp-validation-for="User.Name" class="validation text-xs"></span>
                 </div>
 
-                <span asp-validation-for="User.ColorHex"
-                      class="text-xs text-rose-600"></span>
-            </div>
+                <div class="space-y-1">
+                    <label asp-for="User.ColorHex" class="label"></label>
 
-            <div class="space-y-1">
-                <label asp-for="User.SortOrder" class="form-label"></label>
+                    <div class="flex items-center gap-3">
+                        <input type="color"
+                               value="@initialColor"
+                               class="colorhex-picker h-10 w-14 rounded border bg-transparent p-1"
+                               style="border-color: var(--color-border);"
+                               aria-label="Pick a color" />
 
-                <input asp-for="User.SortOrder"
-                       type="number"
-                       class="input mt-1" />
+                        <input asp-for="User.ColorHex"
+                               type="text"
+                               placeholder="#3B82F6"
+                               class="input colorhex-text flex-1" />
+                    </div>
 
-                <span asp-validation-for="User.SortOrder"
-                      class="text-xs text-rose-600"></span>
+                    <span asp-validation-for="User.ColorHex" class="validation text-xs"></span>
+                </div>
 
-                <p class="text-muted text-xs">
-                    Optional. Lower numbers appear first in lists.
-                </p>
-            </div>
+                <div class="space-y-1">
+                    <label asp-for="User.SortOrder" class="label"></label>
 
-            <div class="flex items-center gap-2">
-                <input asp-for="User.IsActive"
-                       class="h-4 w-4 rounded border-slate-300 text-emerald-600" />
+                    <input asp-for="User.SortOrder"
+                           type="number"
+                           class="input" />
 
-                <label asp-for="User.IsActive"
-                       class="text-sm"></label>
-            </div>
+                    <span asp-validation-for="User.SortOrder" class="validation text-xs"></span>
 
-            <div class="flex items-center gap-3">
-                <button type="submit" class="btn btn-primary">
-                    Save
-                </button>
+                    <p class="text-muted text-xs">
+                        Optional. Lower numbers appear first in lists.
+                    </p>
+                </div>
 
-                <a asp-page="Index" class="btn btn-secondary">
-                    Cancel
-                </a>
-            </div>
-        </form>
-    </div>
+                <div class="flex items-center gap-2">
+                    <input asp-for="User.IsActive"
+                           class="h-4 w-4 rounded" />
+
+                    <label asp-for="User.IsActive"
+                           class="text-sm text-muted"></label>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="submit" class="btn btn-primary">
+                        Save
+                    </button>
+
+                    <a asp-page="Index" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
 </section>
 
 @section Scripts {
@@ -117,3 +114,4 @@
         })();
     </script>
 }
+``

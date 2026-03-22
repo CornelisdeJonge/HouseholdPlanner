@@ -6,9 +6,8 @@
 }
 
 <section class="space-y-4">
-
     <div class="flex items-center justify-between">
-        <h1 class="text-lg font-semibold">
+        <h1 class="page-title">
             Users
         </h1>
 
@@ -25,15 +24,15 @@
     }
     else
     {
-        <div class="panel overflow-x-auto rounded-md">
-            <table class="table min-w-full">
+        <div class="table-wrap">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Color</th>
-                        <th class="px-4 py-2">Sort order</th>
-                        <th class="px-4 py-2">Active</th>
-                        <th class="px-4 py-2 text-right">Actions</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Sort order</th>
+                        <th>Active</th>
+                        <th class="text-right">Actions</th>
                     </tr>
                 </thead>
 
@@ -41,16 +40,16 @@
                     @foreach (var user in Model.Users)
                     {
                         <tr>
-                            <td class="px-4 py-2">
+                            <td>
                                 @user.Name
                             </td>
 
-                            <td class="px-4 py-2">
+                            <td>
                                 @if (!string.IsNullOrWhiteSpace(user.ColorHex))
                                 {
                                     <div class="flex items-center gap-2">
-                                        <span class="inline-block h-4 w-4 rounded-full border border-slate-300"
-                                              style="background-color: @user.ColorHex;">
+                                        <span class="inline-block h-4 w-4 rounded-full border"
+                                              style="background-color: @user.ColorHex; border-color: var(--color-border);">
                                         </span>
                                         <span class="text-muted text-xs">@user.ColorHex</span>
                                     </div>
@@ -61,36 +60,32 @@
                                 }
                             </td>
 
-                            <td class="px-4 py-2">
+                            <td>
                                 @(user.SortOrder?.ToString() ?? "—")
                             </td>
 
-                            <td class="px-4 py-2">
+                            <td>
                                 @if (user.IsActive)
                                 {
-                                    <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600">
-                                        Active
-                                    </span>
+                                    <span class="badge">Active</span>
                                 }
                                 else
                                 {
-                                    <span class="inline-flex items-center rounded-full bg-slate-400/10 px-2 py-0.5 text-xs font-medium text-slate-600">
-                                        Inactive
-                                    </span>
+                                    <span class="badge">Inactive</span>
                                 }
                             </td>
 
-                            <td class="px-4 py-2 text-right">
+                            <td class="text-right">
                                 <div class="inline-flex gap-2">
                                     <a asp-page="Edit"
                                            asp-route-id="@user.Id"
-                                           class="text-xs font-medium text-sky-700 hover:text-sky-900">
+                                           class="action-link">
                                         Edit
                                     </a>
 
                                     <a asp-page="Delete"
                                            asp-route-id="@user.Id"
-                                           class="text-xs font-medium text-rose-700 hover:text-rose-900">
+                                           class="action-link">
                                         Delete
                                     </a>
                                 </div>
