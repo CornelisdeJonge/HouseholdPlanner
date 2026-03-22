@@ -42,7 +42,17 @@
                     <div class="text-base font-semibold tracking-tight">
                         Household Planner
                     </div>
-
+                    <div class="flex items-center gap-3">
+                        <nav class="mt-1">
+                                <div class="flex gap-2 overflow-x-auto pb-1">
+                                    <a asp-page="/Index" class="@(NavClass("/Index"))">Week</a>
+                                    <a asp-page="/Users/Index" class="@(NavClass("/Users/Index"))">Users</a>
+                                    <a asp-page="/Tasks/Index" class="@(NavClass("/Tasks/Index"))">Tasks</a>
+                                    <a asp-page="/Meals/Index" class="@(NavClass("/Meals/Index"))">Meals</a>
+                                    <a asp-page="/Availability/Index" class="@(NavClass("/Availability/Index"))">Availability</a>
+                                </div>
+                        </nav>
+                    </div>
                     <div class="flex items-center gap-3">
                         <div class="text-muted text-[11px] uppercase tracking-wide">
                             Weekly
@@ -58,17 +68,6 @@
                         </button>
                     </div>
                 </div>
-            </div>
-            <div class=" app-header-inner">
-                <nav class="mt-4">
-                    <div class="flex gap-2 overflow-x-auto pb-1">
-                        <a asp-page="/Index" class="@(NavClass("/Index"))">Week</a>
-                        <a asp-page="/Users/Index" class="@(NavClass("/Users/Index"))">Users</a>
-                        <a asp-page="/Tasks/Index" class="@(NavClass("/Tasks/Index"))">Tasks</a>
-                        <a asp-page="/Meals/Index" class="@(NavClass("/Meals/Index"))">Meals</a>
-                        <a asp-page="/Availability/Index" class="@(NavClass("/Availability/Index"))">Availability</a>
-                    </div>
-                </nav>
             </div>
         </header>
 
