@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HouseholdPlanner.Migrations
 {
     [DbContext(typeof(PlannerDbContext))]
-    [Migration("20260321152726_InitialFullSchema")]
+    [Migration("20260324084625_InitialFullSchema")]
     partial class InitialFullSchema
     {
         /// <inheritdoc />
@@ -151,6 +151,9 @@ namespace HouseholdPlanner.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()

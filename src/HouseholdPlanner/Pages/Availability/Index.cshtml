@@ -1,22 +1,111 @@
 ﻿@page
+@model HouseholdPlanner.Pages.Availability.IndexModel
+
 @{
     ViewData["Title"] = "Availability";
 }
 
-<section class="space-y-4">
-    <h1 class="page-title">
-        Availability
-    </h1>
+<h1 class="page-title">Availability</h1>
 
-    <p class="text-muted text-sm">
-        This is a placeholder for the availability view. Navigation and layout are in place.
-    </p>
+<div class="page-section space-y-6">
+    <div class="panel">
+        <div class="panel-body space-y-4">
+            <h2 class="section-title">Add availability slot</h2>
 
-    <section class="panel">
-        <div class="panel-body">
-            <p class="text-muted text-sm">
-                Scheduling and weekly availability planning will be added in a future step.
-            </p>
+            <form method="post" asp-page-handler="Create" class="space-y-4">
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label asp-for="Input.UserId"></label>
+                        <select asp-for="Input.UserId"
+                                asp-items="Model.UserOptions"
+                                class="form-select">
+                            <option value="">Select person</option>
+                        </select>
+                        <span asp-validation-for="Input.UserId"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Input.DayOfWeek"></label>
+                        <select asp-for="Input.DayOfWeek"
+                                asp-items="Model.DayOfWeekOptions"
+                                class="form-select">
+                        </select>
+                        <span asp-validation-for="Input.DayOfWeek"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Input.StartLocalTime"></label>
+                        <input asp-for="Input.StartLocalTime"
+                               type="time"
+                               class="form-input" />
+                        <span asp-validation-for="Input.StartLocalTime"></span>
+                    </div>
+
+                    <div class="form-field">
+                        <label asp-for="Input.EndLocalTime"></label>
+                        <input asp-for="Input.EndLocalTime"
+                               type="time"
+                               class="form-input" />
+                        <span asp-validation-for="Input.EndLocalTime"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Add slot
+                </button>
+            </form>
         </div>
-    </section>
-</section>
+    </div>
+
+    <div class="panel">
+        <div class="panel-body space-y-4">
+            <h2 class="section-title">Existing weekly availability</h2>
+
+            @if (!Model.Slots.Any())
+            {
+                <p class="text-muted">
+                    No availability slots have been defined yet.
+                </p>
+            }
+            else
+            {
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Person</th>
+                                <th>Day</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var slot in Model.Slots)
+                        {
+                            <tr>
+                                <td>@slot.UserName</td>
+                                <td>@slot.DayOfWeek</td>
+                                <td>@slot.StartLocalTime.ToString("HH\\:mm")</td>
+                                <td>@slot.EndLocalTime.ToString("HH\\:mm")</td>
+                                <td class="text-right">
+                                    <form method="post"
+                                          asp-page-handler="Delete"
+                                          class="inline-flex">
+                                        <input type="hidden" name="id" value="@slot.Id" />
+                                        <button type="submit" class="btn btn-secondary">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

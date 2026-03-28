@@ -146,7 +146,8 @@ namespace HouseholdPlanner.Migrations
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     AssignedUserId = table.Column<int>(type: "integer", nullable: true),
                     Priority = table.Column<int>(type: "integer", nullable: false),
-                    Deadline = table.Column<DateOnly>(type: "date", nullable: true)
+                    Deadline = table.Column<DateOnly>(type: "date", nullable: true),
+                    IsCompleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {

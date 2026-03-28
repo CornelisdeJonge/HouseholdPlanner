@@ -1,0 +1,124 @@
+﻿@using System.Globalization
+@model HouseholdPlanner.Models.WeeklyTaskSummaryViewModel
+
+<section class="panel">
+    <div class="panel-body space-y-3">
+        <header class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold">
+                Tasks this week
+            </h2>
+            <p class="text-xs text-muted">
+                @Model.WeekStart.ToString("dd MMM", CultureInfo.CurrentCulture)
+                &ndash;
+                @Model.WeekEnd.ToString("dd MMM", CultureInfo.CurrentCulture)
+            </p>
+        </header>
+
+        <div class="space-y-3">
+            <section class="space-y-1">
+                <header class="flex items-center justify-between">
+                    <span class="text-sm font-semibold">Overdue</span>
+                    <span class="badge">@Model.OverdueCount</span>
+                </header>
+
+                @if (Model.OverdueTasks.Count == 0)
+                {
+                    <p class="text-xs text-muted">
+                        No overdue tasks.
+                    </p>
+                }
+                else
+                {
+                    <ul class="space-y-1">
+                        @foreach (var task in Model.OverdueTasks)
+                        {
+                            <li class="flex items-center justify-between gap-2">
+                                <a asp-page="/Tasks/Edit"
+                                       asp-route-id="@task.Id"
+                                       class="action-link truncate">
+                                    @task.Name
+                                </a>
+                                @if (task.Deadline is { } d)
+                                {
+                                    <span class="text-xs text-muted shrink-0">
+                                        @d.ToString("ddd dd MMM", CultureInfo.CurrentCulture)
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <section class="space-y-1">
+                <header class="flex items-center justify-between">
+                    <span class="text-sm font-semibold">Due this week</span>
+                    <span class="badge">@Model.DueThisWeekCount</span>
+                </header>
+
+                @if (Model.DueThisWeekTasks.Count == 0)
+                {
+                    <p class="text-xs text-muted">
+                        Nothing else due this week.
+                    </p>
+                }
+                else
+                {
+                    <ul class="space-y-1">
+                        @foreach (var task in Model.DueThisWeekTasks)
+                        {
+                            <li class="flex items-center justify-between gap-2">
+                                <a asp-page="/Tasks/Edit"
+                                       asp-route-id="@task.Id"
+                                       class="action-link truncate">
+                                    @task.Name
+                                </a>
+                                @if (task.Deadline is { } d)
+                                {
+                                    <span class="text-xs text-muted shrink-0">
+                                        @d.ToString("ddd dd MMM", CultureInfo.CurrentCulture)
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <section class="space-y-1">
+                <header class="flex items-center justify-between">
+                    <span class="text-sm font-semibold">Unassigned</span>
+                    <span class="badge">@Model.UnassignedCount</span>
+                </header>
+
+                @if (Model.UnassignedTasks.Count == 0)
+                {
+                    <p class="text-xs text-muted">
+                        All this week's tasks are assigned.
+                    </p>
+                }
+                else
+                {
+                    <ul class="space-y-1">
+                        @foreach (var task in Model.UnassignedTasks)
+                        {
+                            <li class="flex items-center justify-between gap-2">
+                                <a asp-page="/Tasks/Edit"
+                                       asp-route-id="@task.Id"
+                                       class="action-link truncate">
+                                    @task.Name
+                                </a>
+                                @if (task.Deadline is { } d)
+                                {
+                                    <span class="text-xs text-muted shrink-0">
+                                        @d.ToString("ddd dd MMM", CultureInfo.CurrentCulture)
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+    </div>
+</section>

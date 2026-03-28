@@ -51,17 +51,17 @@ namespace HouseholdPlanner.Data
 
             var subtasks = new[]
             {
-            new Subtask { Id = tasks[0].Id, Name = "Vacuum living room"},
-            new Subtask { Id = tasks[0].Id, Name = "Vacuum hallway"},
-            new Subtask { Id = tasks[0].Id, Name = "Vacuum kitchen"},
+            new Subtask { PlannerTaskId = tasks[0].Id, Name = "Vacuum living room"},
+            new Subtask { PlannerTaskId = tasks[0].Id, Name = "Vacuum hallway"},
+            new Subtask { PlannerTaskId = tasks[0].Id, Name = "Vacuum kitchen"},
 
-            new Subtask { Id = tasks[1].Id, Name = "Empty top rack"},
-            new Subtask { Id = tasks[1].Id, Name = "Empty bottom rack" },
-            new Subtask { Id = tasks[1].Id, Name = "Cutlery basket" },
+            new Subtask { PlannerTaskId = tasks[1].Id, Name = "Empty top rack"},
+            new Subtask { PlannerTaskId = tasks[1].Id, Name = "Empty bottom rack" },
+            new Subtask { PlannerTaskId = tasks[1].Id, Name = "Cutlery basket" },
 
-            new Subtask { Id = tasks[2].Id, Name = "Collect bins" },
-            new Subtask { Id = tasks[2].Id, Name = "Sort recycling" },
-            new Subtask { Id = tasks[2].Id, Name = "Take bins outside" }
+            new Subtask { PlannerTaskId = tasks[2].Id, Name = "Collect bins" },
+            new Subtask { PlannerTaskId = tasks[2].Id, Name = "Sort recycling" },
+            new Subtask { PlannerTaskId = tasks[2].Id, Name = "Take bins outside" }
         };
 
             context.Subtasks.AddRange(subtasks);
@@ -76,7 +76,7 @@ namespace HouseholdPlanner.Data
                 {
                     weekdayEveningSlots.Add(new AvailabilitySlot
                     {
-                        UserId = user.Id,
+                        User = user,
                         DayOfWeek = day,
                         StartLocalTime = new TimeOnly(18, 0),
                         EndLocalTime = new TimeOnly(21, 0)

@@ -34,5 +34,6 @@ namespace HouseholdPlanner.Data.Entities
         public DateOnly? Deadline { get; set; }
 
         public ICollection<Subtask> Subtasks { get; set; } = [];
+        public bool IsCompleted { get; internal set; }
     }
 }

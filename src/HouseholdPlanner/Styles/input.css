@@ -219,3 +219,23 @@ body {
     @apply text-sm font-medium underline-offset-4 hover:underline;
     color: var(--color-primary);
 }
+
+/* Form <select> fields (used by class="form-select") */
+.form-select {
+    @apply w-full rounded-lg border px-3 py-2 transition outline-none;
+    background-color: var(--color-input-bg);
+    color: var(--color-text);
+    border-color: var(--color-input-border);
+    appearance: none; /* Removes native chrome bevel/blue border */
+}
+
+    /* Placeholder (not used on <select> but harmless if applied) */
+    .form-select::placeholder {
+        color: var(--color-text-muted);
+    }
+
+    /* Focus ring, semantic and theme-safe */
+    .form-select:focus {
+        border-color: var(--color-input-border-focus);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
+    }

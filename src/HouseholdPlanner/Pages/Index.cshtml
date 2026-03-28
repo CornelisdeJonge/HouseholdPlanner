@@ -1,21 +1,99 @@
 ﻿@page
 @model HouseholdPlanner.Pages.IndexModel
 
-<h1 class="mb-4 text-2xl font-semibold">
-    Household Planner
-</h1>
+@{
+    ViewData["Title"] = "Week";
+}
 
-<p class="text-muted mb-4 text-sm">
-    Tailwind 4 and HTMX are wired up. This is your starting dashboard.
-</p>
+<div class="page">
+    <div class="page-header flex items-center justify-between gap-2">
+        <div>
+            <h1 class="page-title">This week</h1>
+            <p class="text-muted text-sm">
+                @Model.WeekStart.ToString("dd MMM yyyy") – @Model.WeekEnd.ToString("dd MMM yyyy")
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a class="btn btn-secondary"
+               asp-page="./Index"
+               asp-route-weekStart="@Model.WeekStart.AddDays(-7)">
+                ◀ Previous
+            </a>
+            <a class="btn btn-secondary"
+               asp-page="./Index"
+               asp-route-weekStart="@Model.WeekStart.AddDays(7)">
+                Next ▶
+            </a>
+            <a class="btn btn-secondary"
+               asp-page="./Index">
+                Today
+            </a>
+        </div>
+    </div>
 
-<button class="rounded bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-        hx-get="/healthz"
-        hx-target="#health-status"
-        hx-swap="innerHTML">
-    Check health
-</button>
+    <div class="mt-4 grid gap-4 lg:grid-cols-[minmax(0,3fr)_minmax(0,1.5fr)]">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="week-grid border rounded overflow-hidden">
+                    <div class="grid grid-cols-8">
+                        <!-- Time labels column -->
+                        <div class="border-r">
+                            <div class="border-t min-h-[49px]"></div>
+                            @foreach (var time in Model.HourSlots)
+                            {
+                                <div class="border-t text-xs text-muted pr-2 text-right flex items-start justify-end pt-1 min-h-[48px]">
+                                    @time.ToString("HH\\:mm")
+                                </div>
+                            }
+                        </div>
 
-<div id="health-status"
-     class="text-muted mt-2 text-xs">
+                        <!-- Day columns -->
+                        @foreach (var day in Model.Days)
+                        {
+                            <div class="border-r last:border-r-0  min-w-[100px]">
+                                <div class="border-b px-1 py-1 text-center">
+                                    <div class="text-xs text-muted">
+                                        @day.ToString("ddd")
+                                    </div>
+                                    <div class="font-semibold">
+                                        @day.ToString("dd MMM")
+                                    </div>
+                                </div>
+                                <div>
+                                    @foreach (var time in Model.HourSlots)
+                                    {
+                                        <div class="border-t min-h-[48px]">
+                                            <!-- Future: tasks/availability overlays for @day @time -->
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="panel">
+            <div class="panel-body">
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-base font-semibold">Tasks this week</h2>
+                    <button class="btn btn-secondary text-xs"
+                            hx-get="/healthz"
+                            hx-target="#week-health-status"
+                            hx-swap="innerHTML">
+                        Check health
+                    </button>
+                </div>
+
+                <div id="week-health-status" class="text-muted text-xs">
+                    System status not checked yet.
+                </div>
+
+                <div class="mt-4 text-muted text-sm">
+                    Weekly task summary panel (data integration from tasks module already implemented in previous step).
+                </div>
+            </div>
+        </aside>
+    </div>
 </div>
