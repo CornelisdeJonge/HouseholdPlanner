@@ -1,7 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Models/WeeklyTaskSummaryViewModel.cs
-using System;
-using System.Collections.Generic;
-
 namespace HouseholdPlanner.Models
 {
     public sealed class WeeklyTaskSummaryItem
@@ -34,4 +31,21 @@ namespace HouseholdPlanner.Models
         public IReadOnlyList<WeeklyTaskSummaryItem> UnassignedTasks { get; init; } =
             Array.Empty<WeeklyTaskSummaryItem>();
     }
+
+    public sealed class TaskScheduleBlockViewModel
+    {
+        public int Id { get; init; }
+        public DateOnly Date { get; init; }
+        public TimeOnly StartLocalTime { get; init; }
+        public TimeSpan Duration { get; init; }
+        public string TaskName { get; init; } = string.Empty;
+        public string? AssigneeName { get; init; }
+        public string? AssigneeColor { get; init; }
+        public bool IsDoubleBooked { get; init; }
+
+        // For grid placement (06:00–22:00, 30-minute rows)
+        public int StartHalfHourIndex { get; init; }
+        public int HalfHourSpan { get; init; }
+    }
+
 }

@@ -1,5 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Data/Entities/TaskSchedule.cs
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace HouseholdPlanner.Data.Entities
@@ -12,13 +11,13 @@ namespace HouseholdPlanner.Data.Entities
     {
         public int Id { get; set; }
 
-        public int TaskId { get; set; }
+        public int PlannerTaskId { get; set; }
 
-        public PlannerTask Task { get; set; } = null!;
+        public PlannerTask PlannerTask { get; set; } = null!;
 
         public int UserId { get; set; }
 
-        public User User { get; set; } = null!;
+        public PlannerUser User { get; set; } = null!;
 
         /// <summary>
         /// Local calendar date for the task occurrence (week starts Monday in UI logic).

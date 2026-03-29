@@ -45,13 +45,13 @@
                             </td>
 
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(user.ColorHex))
+                                @if (!string.IsNullOrWhiteSpace(user.Color))
                                 {
                                     <div class="flex items-center gap-2">
                                         <span class="inline-block h-4 w-4 rounded-full border"
-                                              style="background-color: @user.ColorHex; border-color: var(--color-border);">
+                                              style="background-color: @user.Color; border-color: var(--color-border);">
                                         </span>
-                                        <span class="text-muted text-xs">@user.ColorHex</span>
+                                        <span class="text-muted text-xs">@user.Color</span>
                                     </div>
                                 }
                                 else

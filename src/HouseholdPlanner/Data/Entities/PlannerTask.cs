@@ -23,8 +23,8 @@ namespace HouseholdPlanner.Data.Entities
         [StringLength(2000)]
         public string? Description { get; set; }
 
-        public int? AssignedUserId { get; set; }
-        public User? AssignedUser { get; set; }
+        public int? AssigneeId { get; set; }
+        public PlannerUser? Assignee { get; set; }
 
         public TaskPriority Priority { get; set; } = TaskPriority.Normal;
 

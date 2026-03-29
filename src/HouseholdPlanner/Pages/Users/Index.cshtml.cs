@@ -1,7 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Users/Index.cshtml.cs
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,7 +15,7 @@ namespace HouseholdPlanner.Pages.Users
             _context = context;
         }
 
-        public IList<User> Users { get; private set; } = new List<User>();
+        public IList<PlannerUser> Users { get; private set; } = new List<PlannerUser>();
 
         public async Task OnGetAsync()
         {

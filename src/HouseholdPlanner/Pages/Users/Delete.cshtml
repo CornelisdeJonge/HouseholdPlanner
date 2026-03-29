@@ -19,21 +19,21 @@
             <dl class="space-y-3">
                 <div>
                     <dt class="label mb-0">Name</dt>
-                    <dd>@Model.User.Name</dd>
+                    <dd>@Model.PlannerUser.Name</dd>
                 </div>
 
                 <div>
                     <dt class="label mb-0">Color</dt>
                     <dd>
-                        @if (!string.IsNullOrWhiteSpace(Model.User.ColorHex))
+                        @if (!string.IsNullOrWhiteSpace(Model.PlannerUser.Color))
                         {
                             <div class="flex items-center gap-2">
                                 <span class="inline-block h-4 w-4 rounded-full border"
-                                      style="background-color: @Model.User.ColorHex; border-color: var(--color-border);">
+                                      style="background-color: @Model.PlannerUser.Color; border-color: var(--color-border);">
                                 </span>
 
                                 <span class="text-muted text-xs">
-                                    @Model.User.ColorHex
+                                    @Model.PlannerUser.Color
                                 </span>
                             </div>
                         }
@@ -46,12 +46,12 @@
 
                 <div>
                     <dt class="label mb-0">Sort order</dt>
-                    <dd>@(Model.User.SortOrder?.ToString() ?? "—")</dd>
+                    <dd>@(Model.PlannerUser.SortOrder?.ToString() ?? "—")</dd>
                 </div>
 
                 <div>
                     <dt class="label mb-0">Active</dt>
-                    <dd>@(Model.User.IsActive ? "Yes" : "No")</dd>
+                    <dd>@(Model.PlannerUser.IsActive ? "Yes" : "No")</dd>
                 </div>
             </dl>
         </div>

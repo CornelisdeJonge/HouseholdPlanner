@@ -53,7 +53,7 @@ namespace HouseholdPlanner.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    ColorHex = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: true),
+                    Color = table.Column<string>(type: "character varying(9)", maxLength: 9, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     SortOrder = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -144,7 +144,7 @@ namespace HouseholdPlanner.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
-                    AssignedUserId = table.Column<int>(type: "integer", nullable: true),
+                    AssigneeId = table.Column<int>(type: "integer", nullable: true),
                     Priority = table.Column<int>(type: "integer", nullable: false),
                     Deadline = table.Column<DateOnly>(type: "date", nullable: true),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false)
@@ -153,8 +153,8 @@ namespace HouseholdPlanner.Migrations
                 {
                     table.PrimaryKey("PK_tasks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_tasks_users_AssignedUserId",
-                        column: x => x.AssignedUserId,
+                        name: "FK_tasks_users_AssigneeId",
+                        column: x => x.AssigneeId,
                         principalSchema: "public",
                         principalTable: "users",
                         principalColumn: "Id");
@@ -190,7 +190,7 @@ namespace HouseholdPlanner.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    TaskId = table.Column<int>(type: "integer", nullable: false),
+                    PlannerTaskId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Date = table.Column<DateOnly>(type: "date", nullable: false),
                     StartLocalTime = table.Column<TimeOnly>(type: "time", nullable: false),
@@ -201,8 +201,8 @@ namespace HouseholdPlanner.Migrations
                 {
                     table.PrimaryKey("PK_task_schedules", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_task_schedules_tasks_TaskId",
-                        column: x => x.TaskId,
+                        name: "FK_task_schedules_tasks_PlannerTaskId",
+                        column: x => x.PlannerTaskId,
                         principalSchema: "public",
                         principalTable: "tasks",
                         principalColumn: "Id",
@@ -241,10 +241,10 @@ namespace HouseholdPlanner.Migrations
                 column: "PlannerTaskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_task_schedules_TaskId",
+                name: "IX_task_schedules_PlannerTaskId",
                 schema: "public",
                 table: "task_schedules",
-                column: "TaskId");
+                column: "PlannerTaskId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_task_schedules_UserId",
@@ -253,10 +253,10 @@ namespace HouseholdPlanner.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_tasks_AssignedUserId",
+                name: "IX_tasks_AssigneeId",
                 schema: "public",
                 table: "tasks",
-                column: "AssignedUserId");
+                column: "AssigneeId");
         }
 
         /// <inheritdoc />

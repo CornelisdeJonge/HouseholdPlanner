@@ -1,7 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Tasks/Index.cshtml.cs
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -22,8 +19,8 @@ namespace HouseholdPlanner.Pages.Tasks
 
         public async Task OnGetAsync()
         {
-            Tasks = await _db.Tasks
-                .Include(t => t.AssignedUser)
+            Tasks = await _db.PlannerTasks
+                .Include(t => t.Assignee)
                 .Include(t => t.Subtasks)
                 .OrderBy(t => t.Deadline ?? DateOnly.MaxValue)
                 .ThenByDescending(t => t.Priority)

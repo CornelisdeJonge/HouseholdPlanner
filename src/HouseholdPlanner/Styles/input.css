@@ -1,5 +1,9 @@
 ﻿@import "tailwindcss";
 
+/* ===============================
+   THEME SYSTEM
+   =============================== */
+
 /* Compatibility bridge:
    If any dark:* utilities remain, they now follow the SAME root-class strategy. */
 @custom-variant dark (&:where(.theme-dark, .theme-dark *));
@@ -7,7 +11,7 @@
 /* Optional but recommended: tell the browser both schemes exist */
 :root {
     color-scheme: light dark;
-    /* Radius / motion / sizing tokens if you want them centralized */
+    /* Radius / motion / sizing tokens */
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
@@ -71,7 +75,10 @@ body {
     color: var(--color-text);
 }
 
-/* Shared app shell */
+/* ===============================
+   SHARED APP SHELL
+   =============================== */
+
 .app-shell {
     @apply min-h-screen;
 }
@@ -90,7 +97,10 @@ body {
     @apply mx-auto max-w-7xl px-6 py-8;
 }
 
-/* Shared text helpers */
+/* ===============================
+   TYPOGRAPHY HELPERS
+   =============================== */
+
 .text-muted {
     color: var(--color-text-muted);
 }
@@ -104,7 +114,10 @@ body {
     color: var(--color-text-muted);
 }
 
-/* Panel / card */
+/* ===============================
+   PANELS / CARDS
+   =============================== */
+
 .panel {
     @apply rounded-2xl border shadow-sm;
     background-color: var(--color-surface);
@@ -116,7 +129,10 @@ body {
     @apply p-6;
 }
 
-/* Buttons */
+/* ===============================
+   BUTTONS
+   =============================== */
+
 .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-150 focus:outline-none focus:ring-2 disabled:pointer-events-none disabled:opacity-50;
 }
@@ -148,7 +164,10 @@ body {
         background-color: var(--color-danger-hover);
     }
 
-/* Form fields */
+/* ===============================
+   FORM FIELDS
+   =============================== */
+
 .label {
     @apply mb-1 block text-sm font-medium;
     color: var(--color-text);
@@ -180,7 +199,10 @@ body {
     color: var(--color-danger);
 }
 
-/* Table */
+/* ===============================
+   TABLES
+   =============================== */
+
 .table-wrap {
     @apply overflow-x-auto rounded-2xl border;
     background-color: var(--color-surface);
@@ -207,35 +229,123 @@ body {
         background-color: var(--color-table-row-hover);
     }
 
-/* Small badges / status pills if you use them */
+/* ===============================
+   BADGES
+   =============================== */
+
 .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium;
     background-color: var(--color-surface-muted);
     color: var(--color-text);
 }
 
-/* Link-style actions */
+/* ===============================
+   ACTION LINKS
+   =============================== */
+
 .action-link {
     @apply text-sm font-medium underline-offset-4 hover:underline;
     color: var(--color-primary);
 }
 
-/* Form <select> fields (used by class="form-select") */
+/* ===============================
+   FORM SELECT (semantic helper)
+   =============================== */
+
 .form-select {
     @apply w-full rounded-lg border px-3 py-2 transition outline-none;
     background-color: var(--color-input-bg);
     color: var(--color-text);
     border-color: var(--color-input-border);
-    appearance: none; /* Removes native chrome bevel/blue border */
+    appearance: none;
 }
 
-    /* Placeholder (not used on <select> but harmless if applied) */
     .form-select::placeholder {
         color: var(--color-text-muted);
     }
 
-    /* Focus ring, semantic and theme-safe */
     .form-select:focus {
         border-color: var(--color-input-border-focus);
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
     }
+
+/* ===============================
+   SCHEDULE BLOCKS (Calendar Grid)
+   =============================== */
+
+.schedule-block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    height: 100%;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    line-height: 1.15;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 4px;
+    background-color: var(--planner-schedule-bg, rgba(148, 163, 184, 0.08));
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+    .schedule-block:hover {
+        background-color: var(--planner-schedule-hover-bg, rgba(148, 163, 184, 0.15));
+    }
+
+.schedule-block__title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.schedule-block__meta {
+    font-size: 0.65rem;
+    color: var(--planner-text-muted, #6b7280);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Double-booked indicator */
+.schedule-block--double-booked {
+    background-color: var(--planner-warning-bg, rgba(255, 186, 186, 0.2));
+    border-color: var(--planner-warning-border, rgba(239, 68, 68, 0.9)) !important;
+}
+
+/* ===============================
+   DARK MODE — Schedule Blocks
+   =============================== */
+
+html.dark .schedule-block {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.90);
+}
+
+    html.dark .schedule-block:hover {
+        background-color: rgba(255, 255, 255, 0.12);
+    }
+
+html.dark .schedule-block__title {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.45);
+}
+
+html.dark .schedule-block__meta {
+    color: rgba(255, 255, 255, 0.70);
+}
+
+html.dark .schedule-block--double-booked {
+    background-color: rgba(255, 88, 88, 0.25);
+    border-color: rgba(255, 120, 120, 0.95) !important;
+}
+
+/* Ensures tooltips match dark mode */
+html.dark .schedule-block[title] {
+    color-scheme: dark;
+}

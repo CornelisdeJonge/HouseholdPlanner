@@ -42,6 +42,16 @@
                     <span asp-validation-for="TaskItem.Deadline" class="validation text-xs"></span>
                 </div>
 
+                <div class="space-y-1">
+                    <label asp-for="TaskItem.AssigneeId" class="label">Assignee</label>
+                    <select asp-for="TaskItem.AssigneeId"
+                            asp-items="Model.UserOptions"
+                            class="form-input">
+                        <option value="">— Unassigned —</option>
+                    </select>
+                    <span asp-validation-for="TaskItem.AssigneeId" class="validation text-xs"></span>
+                </div>
+
                 <div class="flex items-center gap-3">
                     <button type="submit" class="btn btn-primary">Save changes</button>
                     <a asp-page="./Index" class="btn btn-secondary">Back to list</a>
@@ -49,29 +59,6 @@
             </form>
         </div>
     </section>
-
-    <section class="panel">
-        <div class="panel-body space-y-3">
-            <h2 class="text-lg font-semibold">Assignment</h2>
-
-            <form method="post" asp-page-handler="ChangeAssignee" class="space-y-2">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.TaskItem.Id" />
-
-                <label asp-for="TaskItem.AssignedUserId" class="label">Assigned to</label>
-                <select asp-for="TaskItem.AssignedUserId"
-                        asp-items="Model.UserOptions"
-                        class="select"
-                        hx-post="?handler=ChangeAssignee"
-                        hx-trigger="change"
-                        hx-include="closest form"
-                        hx-swap="none">
-                    <option value="">Unassigned</option>
-                </select>
-            </form>
-        </div>
-    </section>
-
     <section class="space-y-3">
         <h2 class="text-lg font-semibold">Subtasks</h2>
 

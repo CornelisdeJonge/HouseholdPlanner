@@ -1,9 +1,5 @@
 ﻿// File: src/HouseholdPlanner/Pages/Availability/Index.cshtml.cs
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;

@@ -1,6 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Users/Edit.cshtml.cs
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -10,33 +8,26 @@ using Microsoft.EntityFrameworkCore;
 namespace HouseholdPlanner.Pages.Users
 {
 
-    public class EditModel : PageModel
+    public class EditModel(PlannerDbContext context) : PageModel
     {
-        private readonly PlannerDbContext _context;
-
-        public EditModel(PlannerDbContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public User User { get; set; } = null!;
+        public PlannerUser PlannerUser { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return RedirectToPage("Index");
             }
 
-            User = user;
+            PlannerUser = user;
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var userToUpdate = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var userToUpdate = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
             if (userToUpdate == null)
             {
                 return RedirectToPage("Index");
@@ -46,7 +37,7 @@ namespace HouseholdPlanner.Pages.Users
                     userToUpdate,
                     "User",
                     u => u.Name,
-                    u => u.ColorHex,
+                    u => u.Color,
                     u => u.SortOrder,
                     u => u.IsActive))
             {
@@ -58,7 +49,7 @@ namespace HouseholdPlanner.Pages.Users
                 return Page();
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return RedirectToPage("Index");
         }

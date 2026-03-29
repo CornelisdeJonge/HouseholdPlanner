@@ -52,14 +52,14 @@
                             </td>
 
                             <td>
-                                @if (task.AssignedUser is null)
+                                @if (task.Assignee is null)
                                 {
                                     <span class="text-muted text-xs">Unassigned</span>
                                 }
                                 else
                                 {
                                     <span class="badge">
-                                        @task.AssignedUser.Name
+                                        @task.Assignee.Name
                                     </span>
                                 }
                             </td>

@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = "Edit user";
-    var initialColor = string.IsNullOrWhiteSpace(Model.User?.ColorHex) ? "#3B82F6" : Model.User.ColorHex;
+    var initialColor = string.IsNullOrWhiteSpace(Model.PlannerUser?.Color) ? "#3B82F6" : Model.PlannerUser.Color;
 }
 
 <section class="space-y-4">
@@ -15,20 +15,20 @@
         <div class="panel-body">
             <form method="post" class="space-y-4">
                 @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="User.Id" />
+                <input type="hidden" asp-for="PlannerUser.Id" />
 
                 <div asp-validation-summary="ModelOnly" class="validation"></div>
 
                 <div class="space-y-1">
-                    <label asp-for="User.Name" class="label"></label>
+                    <label asp-for="PlannerUser.Name" class="label"></label>
 
-                    <input asp-for="User.Name" class="input" />
+                    <input asp-for="PlannerUser.Name" class="input" />
 
-                    <span asp-validation-for="User.Name" class="validation text-xs"></span>
+                    <span asp-validation-for="PlannerUser.Name" class="validation text-xs"></span>
                 </div>
 
                 <div class="space-y-1">
-                    <label asp-for="User.ColorHex" class="label"></label>
+                    <label asp-for="PlannerUser.Color" class="label"></label>
 
                     <div class="flex items-center gap-3">
                         <input type="color"
@@ -37,23 +37,23 @@
                                style="border-color: var(--color-border);"
                                aria-label="Pick a color" />
 
-                        <input asp-for="User.ColorHex"
+                        <input asp-for="PlannerUser.Color"
                                type="text"
                                placeholder="#3B82F6"
                                class="input colorhex-text flex-1" />
                     </div>
 
-                    <span asp-validation-for="User.ColorHex" class="validation text-xs"></span>
+                    <span asp-validation-for="PlannerUser.Color" class="validation text-xs"></span>
                 </div>
 
                 <div class="space-y-1">
-                    <label asp-for="User.SortOrder" class="label"></label>
+                    <label asp-for="PlannerUser.SortOrder" class="label"></label>
 
-                    <input asp-for="User.SortOrder"
+                    <input asp-for="PlannerUser.SortOrder"
                            type="number"
                            class="input" />
 
-                    <span asp-validation-for="User.SortOrder" class="validation text-xs"></span>
+                    <span asp-validation-for="PlannerUser.SortOrder" class="validation text-xs"></span>
 
                     <p class="text-muted text-xs">
                         Optional. Lower numbers appear first in lists.
@@ -61,10 +61,10 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <input asp-for="User.IsActive"
+                    <input asp-for="PlannerUser.IsActive"
                            class="h-4 w-4 rounded" />
 
-                    <label asp-for="User.IsActive"
+                    <label asp-for="PlannerUser.IsActive"
                            class="text-sm text-muted"></label>
                 </div>
 

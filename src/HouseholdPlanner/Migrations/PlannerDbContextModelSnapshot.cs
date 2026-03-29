@@ -139,7 +139,7 @@ namespace HouseholdPlanner.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssignedUserId")
+                    b.Property<int?>("AssigneeId")
                         .HasColumnType("integer");
 
                     b.Property<DateOnly?>("Deadline")
@@ -162,7 +162,7 @@ namespace HouseholdPlanner.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AssignedUserId");
+                    b.HasIndex("AssigneeId");
 
                     b.ToTable("tasks", "public");
                 });
@@ -210,18 +210,18 @@ namespace HouseholdPlanner.Migrations
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("PlannerTaskId")
+                        .HasColumnType("integer");
+
                     b.Property<TimeOnly>("StartLocalTime")
                         .HasColumnType("time");
-
-                    b.Property<int>("TaskId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("PlannerTaskId");
 
                     b.HasIndex("UserId");
 
@@ -236,7 +236,7 @@ namespace HouseholdPlanner.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ColorHex")
+                    b.Property<string>("Color")
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)");
 
@@ -299,11 +299,11 @@ namespace HouseholdPlanner.Migrations
 
             modelBuilder.Entity("HouseholdPlanner.Data.Entities.PlannerTask", b =>
                 {
-                    b.HasOne("HouseholdPlanner.Data.Entities.User", "AssignedUser")
+                    b.HasOne("HouseholdPlanner.Data.Entities.User", "Assignee")
                         .WithMany()
-                        .HasForeignKey("AssignedUserId");
+                        .HasForeignKey("AssigneeId");
 
-                    b.Navigation("AssignedUser");
+                    b.Navigation("Assignee");
                 });
 
             modelBuilder.Entity("HouseholdPlanner.Data.Entities.Subtask", b =>
@@ -319,9 +319,9 @@ namespace HouseholdPlanner.Migrations
 
             modelBuilder.Entity("HouseholdPlanner.Data.Entities.TaskSchedule", b =>
                 {
-                    b.HasOne("HouseholdPlanner.Data.Entities.PlannerTask", "Task")
+                    b.HasOne("HouseholdPlanner.Data.Entities.PlannerTask", "PlannerTask")
                         .WithMany()
-                        .HasForeignKey("TaskId")
+                        .HasForeignKey("PlannerTaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -331,7 +331,7 @@ namespace HouseholdPlanner.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Task");
+                    b.Navigation("PlannerTask");
 
                     b.Navigation("User");
                 });

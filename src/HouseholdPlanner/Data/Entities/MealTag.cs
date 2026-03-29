@@ -1,5 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Data/Entities/MealTag.cs
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace HouseholdPlanner.Data.Entities

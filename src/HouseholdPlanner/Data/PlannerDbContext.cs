@@ -4,15 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseholdPlanner.Data
 {
-    public class PlannerDbContext : DbContext
+    public class PlannerDbContext(DbContextOptions<PlannerDbContext> options) : DbContext(options)
     {
-        public PlannerDbContext(DbContextOptions<PlannerDbContext> options)
-            : base(options)
-        {
-        }
-
-        public DbSet<User> Users => Set<User>();
-        public DbSet<PlannerTask> Tasks => Set<PlannerTask>();
+        public DbSet<PlannerUser> Users => Set<PlannerUser>();
+        public DbSet<PlannerTask> PlannerTasks => Set<PlannerTask>();
         public DbSet<Subtask> Subtasks => Set<Subtask>();
         public DbSet<AvailabilitySlot> AvailabilitySlots => Set<AvailabilitySlot>();
         public DbSet<TaskSchedule> TaskSchedules => Set<TaskSchedule>();
@@ -27,12 +22,12 @@ namespace HouseholdPlanner.Data
 
             modelBuilder.HasDefaultSchema("public");
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<PlannerUser>(entity =>
             {
                 entity.ToTable("users");
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Name).IsRequired().HasMaxLength(100);
-                entity.Property(x => x.ColorHex).HasMaxLength(9);
+                entity.Property(x => x.Color).HasMaxLength(9);
                 entity.Property(x => x.SortOrder);
             });
 

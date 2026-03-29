@@ -1,6 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Tasks/Edit.cshtml.cs
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -10,15 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseholdPlanner.Pages.Tasks
 {
-    public class EditModel : PageModel
+    public class EditModel(PlannerDbContext db) : PageModel
     {
-        private readonly PlannerDbContext _db;
-
-        public EditModel(PlannerDbContext db)
-        {
-            _db = db;
-        }
-
         [BindProperty]
         public PlannerTask TaskItem { get; set; } = default!;
 
@@ -26,9 +17,9 @@ namespace HouseholdPlanner.Pages.Tasks
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var task = await _db.Tasks
+            var task = await db.PlannerTasks
                 .Include(t => t.Subtasks)
-                .Include(t => t.AssignedUser)
+                .Include(t => t.Assignee)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (task == null)
@@ -47,13 +38,13 @@ namespace HouseholdPlanner.Pages.Tasks
             if (!ModelState.IsValid)
             {
                 await LoadUserOptionsAsync();
-                TaskItem.Subtasks = await _db.Subtasks
+                TaskItem.Subtasks = await db.Subtasks
                     .Where(s => s.PlannerTaskId == TaskItem.Id)
                     .ToListAsync();
                 return Page();
             }
 
-            var existing = await _db.Tasks.FirstOrDefaultAsync(t => t.Id == TaskItem.Id);
+            var existing = await db.PlannerTasks.FirstOrDefaultAsync(t => t.Id == TaskItem.Id);
             if (existing == null)
             {
                 return NotFound();
@@ -63,33 +54,31 @@ namespace HouseholdPlanner.Pages.Tasks
             existing.Description = TaskItem.Description;
             existing.Priority = TaskItem.Priority;
             existing.Deadline = TaskItem.Deadline;
-            existing.AssignedUserId = TaskItem.AssignedUserId;
+            existing.AssigneeId = TaskItem.AssigneeId;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             // ✅ Use explicit absolute page path to ensure redirect back to overview
             return RedirectToPage("/Tasks/Index");
         }
 
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostChangeAssigneeAsync(int id)
         {
-            var task = await _db.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+            var task = await db.PlannerTasks.FirstOrDefaultAsync(t => t.Id == id);
             if (task == null)
             {
                 return NotFound();
             }
 
-            if (!await TryUpdateModelAsync(task, "TaskItem", t => t.AssignedUserId))
+            if (!await TryUpdateModelAsync(task, "TaskItem", t => t.AssigneeId))
             {
                 return BadRequest();
             }
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             return new EmptyResult();
         }
 
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostAddSubtaskAsync(int id, string newSubtaskTitle)
         {
             // For this handler, we only care about the new subtask title.
@@ -100,7 +89,7 @@ namespace HouseholdPlanner.Pages.Tasks
                 ModelState.AddModelError("NewSubtaskTitle", "Subtask title is required.");
             }
 
-            var task = await _db.Tasks
+            var task = await db.PlannerTasks
                 .Include(t => t.Subtasks)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -116,41 +105,48 @@ namespace HouseholdPlanner.Pages.Tasks
                 return Page();
             }
 
-            _db.Subtasks.Add(new Subtask
+            db.Subtasks.Add(new Subtask
             {
                 PlannerTaskId = task.Id,
                 Name = newSubtaskTitle.Trim(),
                 IsDone = false
             });
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return RedirectToPage(new { id });
         }
 
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostToggleSubtaskAsync(int subtaskId)
         {
-            var subtask = await _db.Subtasks.FirstOrDefaultAsync(s => s.Id == subtaskId);
+            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == subtaskId);
             if (subtask == null)
             {
                 return NotFound();
             }
 
             subtask.IsDone = !subtask.IsDone;
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
 
             return new EmptyResult();
         }
 
+
         private async Task LoadUserOptionsAsync()
         {
-            var users = await _db.Users
+            var users = await db.Users
                 .OrderBy(u => u.SortOrder ?? int.MaxValue)
                 .ThenBy(u => u.Name)
                 .ToListAsync();
 
-            UserOptions = new SelectList(users, "Id", "Name");
+            // Simple SelectList: value = Id, text = Name, selected = TaskItem.AssigneeId
+            UserOptions = new SelectList(
+                users,
+                nameof(PlannerUser.Id),
+                nameof(PlannerUser.Name),
+                TaskItem?.AssigneeId
+            );
         }
+
     }
 }

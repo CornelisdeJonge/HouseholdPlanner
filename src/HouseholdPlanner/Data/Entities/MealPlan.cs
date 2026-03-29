@@ -1,6 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Data/Entities/MealPlan.cs
-using System;
-
 namespace HouseholdPlanner.Data.Entities
 {
 

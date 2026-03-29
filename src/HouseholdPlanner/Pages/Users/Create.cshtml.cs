@@ -1,5 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Users/Create.cshtml.cs
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -7,17 +6,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HouseholdPlanner.Pages.Users
 {
-    public class CreateModel : PageModel
+    public class CreateModel(PlannerDbContext context) : PageModel
     {
-        private readonly PlannerDbContext _context;
-
-        public CreateModel(PlannerDbContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
-        public User User { get; set; } = new User();
+        public PlannerUser PlannerUser { get; set; } = new PlannerUser();
 
         public void OnGet()
         {
@@ -30,8 +22,8 @@ namespace HouseholdPlanner.Pages.Users
                 return Page();
             }
 
-            _context.Users.Add(User);
-            await _context.SaveChangesAsync();
+            context.Users.Add(PlannerUser);
+            await context.SaveChangesAsync();
 
             return RedirectToPage("Index");
         }

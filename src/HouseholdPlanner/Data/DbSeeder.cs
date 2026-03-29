@@ -18,9 +18,9 @@ namespace HouseholdPlanner.Data
             // --- Users ---
             var users = new[]
             {
-            new User { Name = "Cornelis", ColorHex = "#ef4444" },
-            new User { Name = "Melissa", ColorHex = "#3b82f6" },
-            new User { Name = "Waylon",  ColorHex = "#22c55e" }
+            new PlannerUser { Name = "Cornelis", Color = "#ef4444" },
+            new PlannerUser { Name = "Melissa", Color = "#3b82f6" },
+            new PlannerUser { Name = "Waylon",  Color = "#22c55e" }
         };
 
             context.Users.AddRange(users);
@@ -46,7 +46,7 @@ namespace HouseholdPlanner.Data
             }
         };
 
-            context.Tasks.AddRange(tasks);
+            context.PlannerTasks.AddRange(tasks);
             await context.SaveChangesAsync(cancellationToken);
 
             var subtasks = new[]

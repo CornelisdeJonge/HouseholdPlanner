@@ -1,6 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Tasks/Create.cshtml.cs
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +35,7 @@ namespace HouseholdPlanner.Pages.Tasks
                 return Page();
             }
 
-            _db.Tasks.Add(TaskItem);
+            _db.PlannerTasks.Add(TaskItem);
             await _db.SaveChangesAsync();
 
             return RedirectToPage("./Index");

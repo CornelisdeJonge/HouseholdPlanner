@@ -1,5 +1,4 @@
 ﻿// File: src/HouseholdPlanner/Pages/Tasks/Delete.cshtml.cs
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +21,8 @@ namespace HouseholdPlanner.Pages.Tasks
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var task = await _db.Tasks
-                .Include(t => t.AssignedUser)
+            var task = await _db.PlannerTasks
+                .Include(t => t.Assignee)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
             if (task == null)
@@ -37,13 +36,13 @@ namespace HouseholdPlanner.Pages.Tasks
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var task = await _db.Tasks.FindAsync(id);
+            var task = await _db.PlannerTasks.FindAsync(id);
             if (task == null)
             {
                 return RedirectToPage("./Index");
             }
 
-            _db.Tasks.Remove(task);
+            _db.PlannerTasks.Remove(task);
             await _db.SaveChangesAsync();
 
             return RedirectToPage("./Index");
