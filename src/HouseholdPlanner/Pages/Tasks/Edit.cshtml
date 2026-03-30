@@ -9,6 +9,7 @@
 <section class="space-y-6">
     <h1 class="page-title">Edit task</h1>
 
+    <!-- Main task edit panel -->
     <section class="panel">
         <div class="panel-body">
             <form method="post" class="space-y-4">
@@ -46,7 +47,7 @@
                     <label asp-for="TaskItem.AssigneeId" class="label">Assignee</label>
                     <select asp-for="TaskItem.AssigneeId"
                             asp-items="Model.UserOptions"
-                            class="form-input">
+                            class="input">
                         <option value="">— Unassigned —</option>
                     </select>
                     <span asp-validation-for="TaskItem.AssigneeId" class="validation text-xs"></span>
@@ -59,53 +60,7 @@
             </form>
         </div>
     </section>
-    <section class="space-y-3">
-        <h2 class="text-lg font-semibold">Subtasks</h2>
 
-        <section class="panel">
-            <div class="panel-body">
-                @if (Model.TaskItem.Subtasks == null || !Model.TaskItem.Subtasks.Any())
-                {
-                    <p class="text-muted text-sm">No subtasks yet.</p>
-                }
-                else
-                {
-                    <ul class="space-y-2">
-                        @foreach (var sub in Model.TaskItem.Subtasks.OrderBy(s => s.Id))
-                        {
-                            <li class="flex items-center">
-                                <form method="post" asp-page-handler="ToggleSubtask" class="inline-flex items-center gap-2">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="subtaskId" value="@sub.Id" />
-                                    <input type="checkbox"
-                                           class="h-5 w-5 rounded"
-                                    @(sub.IsDone ? "checked" : "")
-                                           hx-post="?handler=ToggleSubtask"
-                                           hx-trigger="change"
-                                           hx-include="closest form"
-                                           hx-swap="none" />
-                                    <span class="text-sm @(sub.IsDone ? "text-muted line-through" : "")">
-                                        @sub.Name
-                                    </span>
-                                </form>
-                            </li>
-                        }
-                    </ul>
-                }
-
-                <form method="post" asp-page-handler="AddSubtask" class="mt-4 flex items-center gap-2">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.TaskItem.Id" />
-
-                    <input type="text"
-                           name="newSubtaskTitle"
-                           class="input flex-1"
-                           placeholder="New subtask title" />
-                    <button type="submit" class="btn btn-secondary">
-                        Add subtask
-                    </button>
-                </form>
-            </div>
-        </section>
-    </section>
+    <!-- ✅ Subtasks section via partial -->
+    @await Html.PartialAsync("_SubtasksList", Model.TaskItem)
 </section>

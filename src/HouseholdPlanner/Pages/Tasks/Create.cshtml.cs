@@ -8,15 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseholdPlanner.Pages.Tasks
 {
-    public class CreateModel : PageModel
+    public class CreateModel(PlannerDbContext db) : PageModel
     {
-        private readonly PlannerDbContext _db;
-
-        public CreateModel(PlannerDbContext db)
-        {
-            _db = db;
-        }
-
         [BindProperty]
         public PlannerTask TaskItem { get; set; } = new PlannerTask();
 
@@ -35,15 +28,15 @@ namespace HouseholdPlanner.Pages.Tasks
                 return Page();
             }
 
-            _db.PlannerTasks.Add(TaskItem);
-            await _db.SaveChangesAsync();
+            db.PlannerTasks.Add(TaskItem);
+            await db.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
 
         private async Task LoadUserOptionsAsync()
         {
-            var users = await _db.Users
+            var users = await db.Users
                 .OrderBy(u => u.SortOrder ?? int.MaxValue)
                 .ThenBy(u => u.Name)
                 .ToListAsync();

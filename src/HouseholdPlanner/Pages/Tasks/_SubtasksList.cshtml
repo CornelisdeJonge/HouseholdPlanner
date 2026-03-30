@@ -1,0 +1,65 @@
+﻿@model HouseholdPlanner.Data.Entities.PlannerTask
+
+<section id="subtasks-list" class="space-y-3">
+    <h2 class="text-lg font-semibold">Subtasks</h2>
+
+    <section class="panel">
+        <div class="panel-body">
+            @if (Model.Subtasks == null || !Model.Subtasks.Any())
+            {
+                <p class="text-muted text-sm">No subtasks yet.</p>
+            }
+            else
+            {
+                <ul class="space-y-2">
+                    @foreach (var sub in Model.Subtasks.OrderBy(s => s.Id))
+                    {
+                        <li class="flex items-center justify-between gap-2">
+                            <form method="post" asp-page-handler="ToggleSubtask" class="inline-flex items-center gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="subtaskId" value="@sub.Id" />
+                                <input type="checkbox"
+                                       class="h-5 w-5 rounded"
+                                       @(sub.IsDone ? "checked" : "")
+                                       hx-post="?handler=ToggleSubtask"
+                                       hx-trigger="change"
+                                       hx-include="closest form"
+                                       hx-target="#subtasks-list"
+                                       hx-swap="outerHTML" />
+                                <span class="text-sm @(sub.IsDone ? "text-muted line-through" : "")">
+                                    @sub.Name
+                                </span>
+                            </form>
+
+                            <form method="post" asp-page-handler="DeleteSubtask" class="inline-flex items-end gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="subtaskId" value="@sub.Id" />
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        hx-post="?handler=DeleteSubtask"
+                                        hx-include="closest form"
+                                        hx-target="#subtasks-list"
+                                        hx-swap="outerHTML">
+                                    Delete
+                                </button>
+                            </form>
+                        </li>
+                    }
+                </ul>
+            }
+
+            <form method="post" asp-page-handler="AddSubtask" class="mt-4 flex items-center gap-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <input type="text"
+                       name="newSubtaskTitle"
+                       class="input flex-1"
+                       placeholder="New subtask title" />
+                <button type="submit" class="btn btn-secondary">
+                    Add subtask
+                </button>
+            </form>
+        </div>
+    </section>
+</section>

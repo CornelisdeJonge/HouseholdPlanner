@@ -58,7 +58,7 @@ namespace HouseholdPlanner.Pages.Tasks
 
             await db.SaveChangesAsync();
 
-            // ✅ Use explicit absolute page path to ensure redirect back to overview
+            // Redirect back to tasks overview
             return RedirectToPage("/Tasks/Index");
         }
 
@@ -116,7 +116,6 @@ namespace HouseholdPlanner.Pages.Tasks
 
             return RedirectToPage(new { id });
         }
-
         public async Task<IActionResult> OnPostToggleSubtaskAsync(int subtaskId)
         {
             var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == subtaskId);
@@ -128,9 +127,40 @@ namespace HouseholdPlanner.Pages.Tasks
             subtask.IsDone = !subtask.IsDone;
             await db.SaveChangesAsync();
 
-            return new EmptyResult();
-        }
+            var taskId = subtask.PlannerTaskId;
 
+            var task = await db.PlannerTasks
+                .Include(t => t.Subtasks)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            return Partial("_SubtasksList", task!);
+        }
+        public async Task<IActionResult> OnPostDeleteSubtaskAsync(int subtaskId)
+        {
+            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == subtaskId);
+            if (subtask == null)
+            {
+                return NotFound();
+            }
+
+            var taskId = subtask.PlannerTaskId;
+
+            db.Subtasks.Remove(subtask);
+            await db.SaveChangesAsync();
+
+            // Reload the task with updated subtasks
+            var task = await db.PlannerTasks
+                .Include(t => t.Subtasks)
+                .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            // Return only the subtasks section for HTMX to swap in
+            return Partial("_SubtasksList", task);
+        }
 
         private async Task LoadUserOptionsAsync()
         {
@@ -147,6 +177,5 @@ namespace HouseholdPlanner.Pages.Tasks
                 TaskItem?.AssigneeId
             );
         }
-
     }
 }

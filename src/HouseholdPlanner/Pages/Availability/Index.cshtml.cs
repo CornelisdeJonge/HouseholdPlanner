@@ -9,20 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseholdPlanner.Pages.Availability
 {
-    public class IndexModel : PageModel
+    public class IndexModel(PlannerDbContext db) : PageModel
     {
-        private readonly PlannerDbContext _db;
+        public IList<SlotRow> Slots { get; private set; } = [];
 
-        public IndexModel(PlannerDbContext db)
-        {
-            _db = db;
-        }
+        public IList<SelectListItem> UserOptions { get; private set; } = [];
 
-        public IList<SlotRow> Slots { get; private set; } = new List<SlotRow>();
-
-        public IList<SelectListItem> UserOptions { get; private set; } = new List<SelectListItem>();
-
-        public IList<SelectListItem> DayOfWeekOptions { get; private set; } = new List<SelectListItem>();
+        public IList<SelectListItem> DayOfWeekOptions { get; private set; } = [];
 
         [BindProperty]
         public InputModel Input { get; set; } = new InputModel();
@@ -47,7 +40,7 @@ namespace HouseholdPlanner.Pages.Availability
                 return Page();
             }
 
-            var user = await _db.Users.FindAsync(Input.UserId);
+            var user = await db.Users.FindAsync(Input.UserId);
             if (user == null)
             {
                 ModelState.AddModelError(nameof(Input.UserId), "Selected user does not exist.");
@@ -63,19 +56,19 @@ namespace HouseholdPlanner.Pages.Availability
                 EndLocalTime = Input.EndLocalTime
             };
 
-            _db.AvailabilitySlots.Add(slot);
-            await _db.SaveChangesAsync();
+            db.AvailabilitySlots.Add(slot);
+            await db.SaveChangesAsync();
 
             return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var slot = await _db.AvailabilitySlots.FindAsync(id);
+            var slot = await db.AvailabilitySlots.FindAsync(id);
             if (slot != null)
             {
-                _db.AvailabilitySlots.Remove(slot);
-                await _db.SaveChangesAsync();
+                db.AvailabilitySlots.Remove(slot);
+                await db.SaveChangesAsync();
             }
 
             return RedirectToPage();
@@ -83,7 +76,7 @@ namespace HouseholdPlanner.Pages.Availability
 
         private async Task LoadAsync()
         {
-            UserOptions = await _db.Users
+            UserOptions = await db.Users
                 .OrderBy(u => u.Name)
                 .Select(u => new SelectListItem
                 {
@@ -94,7 +87,7 @@ namespace HouseholdPlanner.Pages.Availability
 
             DayOfWeekOptions = BuildDayOfWeekOptions();
 
-            Slots = await _db.AvailabilitySlots
+            Slots = await db.AvailabilitySlots
                 .Include(a => a.User)
                 .OrderBy(a => a.User.Name)
                 .ThenBy(a => a.DayOfWeek)
@@ -123,13 +116,11 @@ namespace HouseholdPlanner.Pages.Availability
                 DayOfWeek.Sunday
             };
 
-            return orderedDays
-                .Select(d => new SelectListItem
+            return [.. orderedDays.Select(static d => new SelectListItem
                 {
                     Value = ((int)d).ToString(),
                     Text = d.ToString()
-                })
-                .ToList();
+                })];
         }
 
         public class InputModel
