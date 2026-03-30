@@ -1,0 +1,91 @@
+﻿@model HouseholdPlanner.Pages.IndexModel
+
+<div class="flex items-center justify-between mb-2">
+    <h2 class="text-base font-semibold">
+        @(Model.SelectedUser != null 
+            ? $"{Model.SelectedUser.Name}'s tasks this week" 
+            : "Tasks this week")
+    </h2>
+</div>
+
+<!-- OVERDUE -->
+@if (Model.OverdueTasks.Any())
+{
+    <h3 class="text-sm font-semibold mb-1">Overdue</h3>
+    <ul class="mb-3 space-y-1">
+        @foreach (var task in Model.OverdueTasks)
+        {
+            <li class="flex items-center justify-between text-sm">
+                <a class="action-link"
+                   asp-page="/Tasks/Edit"
+                   asp-route-id="@task.Id">
+                    @task.Name
+                </a>
+
+                @if (task.AssigneeId != null)
+                {
+                    <a class="action-link text-xs"
+                       asp-page="/Schedules/Create"
+                       asp-route-taskId="@task.Id"
+                       asp-route-userId="@Model.SelectedUserId"
+                       asp-route-returnUrl='@Url.Page("/Index", new {
+                           weekStart = Model.WeekStart.ToString("yyyy-MM-dd"),
+                           userId = Model.SelectedUserId
+                       })'>
+                        Plan
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+}
+
+<!-- DUE THIS WEEK -->
+@if (Model.DueThisWeekTasks.Any())
+{
+    <h3 class="text-sm font-semibold mb-1">Due this week</h3>
+    <ul class="mb-3 space-y-1">
+        @foreach (var task in Model.DueThisWeekTasks)
+        {
+            <li class="flex items-center justify-between text-sm">
+                <a class="action-link"
+                   asp-page="/Tasks/Edit"
+                   asp-route-id="@task.Id">
+                    @task.Name
+                </a>
+
+                @if (task.AssigneeId != null)
+                {
+                    <a class="action-link text-xs"
+                       asp-page="/Schedules/Create"
+                       asp-route-taskId="@task.Id"
+                       asp-route-userId="@Model.SelectedUserId"
+                       asp-route-returnUrl='@Url.Page("/Index", new {
+                           weekStart = Model.WeekStart.ToString("yyyy-MM-dd"),
+                           userId = Model.SelectedUserId
+                       })'>
+                        Plan
+                    </a>
+                }
+            </li>
+        }
+    </ul>
+}
+
+<!-- UNASSIGNED TASKS -->
+@if (Model.UnassignedTasks.Any())
+{
+    <h3 class="text-sm font-semibold mb-1">Unassigned</h3>
+    <ul class="space-y-1">
+        @foreach (var task in Model.UnassignedTasks)
+        {
+            <li class="flex items-center justify-between text-sm">
+                <a class="action-link"
+                   asp-page="/Tasks/Edit"
+                   asp-route-id="@task.Id">
+                    @task.Name
+                </a>
+            </li>
+        }
+    </ul>
+}

@@ -94,7 +94,7 @@ body {
 }
 
 .app-main {
-    @apply mx-auto max-w-7xl px-6 py-8;
+    @apply mx-auto max-w-7xl px-1 py-1;
 }
 
 /* ===============================
@@ -214,20 +214,20 @@ body {
     color: var(--color-text);
 }
 
-    .table thead th {
-        @apply px-4 py-3 text-left font-medium;
-        background-color: var(--color-table-head);
-        color: var(--color-text);
-    }
+.table thead th {
+    @apply px-4 py-3 text-left font-medium;
+    background-color: var(--color-table-head);
+    color: var(--color-text);
+}
 
-    .table tbody td {
-        @apply px-4 py-3 align-top;
-        border-top: 1px solid var(--color-border);
-    }
+.table tbody td {
+    @apply px-4 py-3 align-top;
+    border-top: 1px solid var(--color-border);
+}
 
-    .table tbody tr:hover {
-        background-color: var(--color-table-row-hover);
-    }
+.table tbody tr:hover {
+    background-color: var(--color-table-row-hover);
+}
 
 /* ===============================
    BADGES
@@ -290,11 +290,13 @@ body {
     cursor: pointer;
     overflow: hidden;
     transition: background-color 0.15s ease, border-color 0.15s ease;
+    z-index: 10;
 }
 
-    .schedule-block:hover {
-        background-color: var(--planner-schedule-hover-bg, rgba(148, 163, 184, 0.15));
-    }
+.schedule-block:hover {
+    background-color: var(--planner-schedule-hover-bg, rgba(148, 163, 184, 0.15));
+    z-index: 11;
+}
 
 .schedule-block__title {
     font-weight: 600;
@@ -311,11 +313,47 @@ body {
     white-space: nowrap;
 }
 
+.schedule-block--overlap {
+    border-color: var(--planner-border-subtle, rgba(148, 163, 184, 0.7));
+    background-color: var(--color-surface, #ffffff);
+    opacity: 0.9;
+    position: absolute;
+    z-index: 10;
+}
+
+.background-row {
+    position: relative;
+    z-index: 0;
+}
+
 /* Double-booked indicator */
 .schedule-block--double-booked {
     background-color: var(--planner-warning-bg, rgba(255, 186, 186, 0.2));
     border-color: var(--planner-warning-border, rgba(239, 68, 68, 0.9)) !important;
 }
+
+/* ===============================
+   USER COLOR CHIPS
+   =============================== */
+
+.user-chip {
+    border: 2px solid var(--user-chip-color, var(--color-border));
+    background-color: color-mix(in srgb, var(--user-chip-color) 12%, transparent);
+    color: var(--color-text);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.user-chip:hover {
+    background-color: color-mix(in srgb, var(--user-chip-color) 22%, transparent);
+    border-color: var(--user-chip-color);
+}
+
+/* Selected chip highlight */
+.user-chip.ring-2 {
+    border-color: var(--user-chip-color);
+    box-shadow: 0 0 0 2px var(--user-chip-color);
+}
+
 
 /* ===============================
    DARK MODE — Schedule Blocks
@@ -327,9 +365,9 @@ html.dark .schedule-block {
     color: rgba(255, 255, 255, 0.90);
 }
 
-    html.dark .schedule-block:hover {
-        background-color: rgba(255, 255, 255, 0.12);
-    }
+html.dark .schedule-block:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
 
 html.dark .schedule-block__title {
     color: rgba(255, 255, 255, 0.95);

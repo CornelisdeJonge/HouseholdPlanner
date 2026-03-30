@@ -1,8 +1,4 @@
 // File: src/HouseholdPlanner/Pages/Index.cshtml.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using HouseholdPlanner.Data;
 using HouseholdPlanner.Data.Entities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -28,6 +24,11 @@ namespace HouseholdPlanner.Pages
         public List<PlannerTask> DueThisWeekTasks { get; private set; } = [];
         public List<PlannerTask> UnassignedTasks { get; private set; } = [];
 
+        // User-specific view data
+        public int? SelectedUserId { get; private set; }
+        public PlannerUser? SelectedUser { get; private set; }
+        public List<PlannerUser> AllUsers { get; private set; } = [];
+
         public sealed class TaskScheduleBlockViewModel
         {
             public int Id { get; init; }
@@ -38,46 +39,56 @@ namespace HouseholdPlanner.Pages
             public string? AssigneeName { get; init; }
             public string? AssigneeColor { get; init; }
 
-            /// <summary>
-            /// True when this block overlaps (time-wise) with at least one
-            /// other block for the same user on the same day.
-            /// </summary>
             public bool IsDoubleBooked { get; init; }
 
-            /// <summary>
-            /// Index of the 30-minute grid row from 06:00 (0-based).
-            /// </summary>
             public int StartHalfHourIndex { get; init; }
-
-            /// <summary>
-            /// How many 30-minute rows the block spans.
-            /// </summary>
             public int HalfHourSpan { get; init; }
         }
 
-        public async Task OnGetAsync(DateOnly? weekStart)
+        public async Task OnGetAsync(DateOnly? weekStart, int? userId)
         {
-            // Determine week start (Monday-based)
+            // Selected user
+            SelectedUserId = userId;
+
+            // Load all users (for chips/dropdown)
+            AllUsers = await db.Users
+                .OrderBy(u => u.SortOrder ?? int.MaxValue)
+                .ThenBy(u => u.Name)
+                .ToListAsync();
+
+            // If a user is selected, load specific user
+            if (SelectedUserId != null)
+            {
+                SelectedUser = AllUsers.FirstOrDefault(u => u.Id == SelectedUserId);
+            }
+
+            // Determine week boundaries
             WeekStart = weekStart ?? GetCurrentWeekMonday();
             WeekEnd = WeekStart.AddDays(6);
 
-            // Build day list (Mon–Sun)
+            // Build Mon–Sun day list
             Days = [.. Enumerable.Range(0, 7).Select(offset => WeekStart.AddDays(offset))];
 
-            // Hour slots for the left-hand time column (06:00–21:00 / 22-ish)
-            HourSlots = [.. Enumerable.Range(6, 16) // 6..21 -> 16 hours
-                .Select(h => new TimeOnly(h, 0))];
+            // Hour slots 06:00–21:00
+            HourSlots = [.. Enumerable.Range(6, 16).Select(h => new TimeOnly(h, 0))];
 
-            // Load schedules for this week
+            // Load all schedules for the week
             var schedules = await db.TaskSchedules
                 .Include(s => s.PlannerTask)
                     .ThenInclude(t => t.Assignee)
                 .Where(s => s.Date >= WeekStart && s.Date <= WeekEnd)
                 .ToListAsync();
 
+            // Filter by user if selected
+            if (SelectedUserId != null)
+            {
+                schedules = [.. schedules.Where(s => s.PlannerTask.AssigneeId == SelectedUserId)];
+            }
+
+            // Build block VMs
             ScheduleBlocks = BuildScheduleBlocks(schedules);
 
-            // Load tasks for sidebar summary
+            // Load sidebar task lists
             await LoadWeeklyTaskSummaryAsync();
         }
 
@@ -85,12 +96,12 @@ namespace HouseholdPlanner.Pages
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 
-            // Base query; adjust as needed if you later add soft-delete or completion flags.
+            // Base query
             var tasksQuery = db.PlannerTasks
                 .Include(t => t.Assignee)
                 .AsQueryable();
 
-            // Overdue: deadline before today
+            // Filter overdue
             OverdueTasks = await tasksQuery
                 .Where(t => t.Deadline != null && t.Deadline < today)
                 .OrderBy(t => t.Deadline)
@@ -98,41 +109,40 @@ namespace HouseholdPlanner.Pages
                 .Take(50)
                 .ToListAsync();
 
-            // Due this week: deadline within [WeekStart, WeekEnd]
+            // Filter due this week
             DueThisWeekTasks = await tasksQuery
-                .Where(t => t.Deadline != null &&
-                            t.Deadline >= WeekStart &&
-                            t.Deadline <= WeekEnd)
+                .Where(t =>
+                    t.Deadline != null &&
+                    t.Deadline >= WeekStart &&
+                    t.Deadline <= WeekEnd)
                 .OrderBy(t => t.Deadline)
                 .ThenBy(t => t.Name)
                 .Take(50)
                 .ToListAsync();
 
-            // Unassigned: no assignee set
+            // Unassigned (these remain global)
             UnassignedTasks = await tasksQuery
                 .Where(t => t.AssigneeId == null)
-                .OrderBy(t => t.Deadline ?? WeekEnd.AddDays(7)) // nulls at end
+                .OrderBy(t => t.Deadline ?? WeekEnd.AddDays(7))
                 .ThenBy(t => t.Name)
                 .Take(50)
                 .ToListAsync();
+
+            // If viewer-specific, apply user filter to overdue + due-this-week
+            if (SelectedUserId != null)
+            {
+                OverdueTasks = [.. OverdueTasks.Where(t => t.AssigneeId == SelectedUserId)];
+                DueThisWeekTasks = [.. DueThisWeekTasks.Where(t => t.AssigneeId == SelectedUserId)];
+            }
         }
 
         private List<TaskScheduleBlockViewModel> BuildScheduleBlocks(List<TaskSchedule> schedules)
         {
             var result = new List<TaskScheduleBlockViewModel>();
+            if (!schedules.Any()) return result;
 
-            if (!schedules.Any())
-            {
-                return result;
-            }
-
-            // Group by day and user to detect overlaps per user/day
             var groupedByUserAndDay = schedules
-                .GroupBy(s => new
-                {
-                    s.Date,
-                    UserId = s.PlannerTask.AssigneeId
-                });
+                .GroupBy(s => new { s.Date, UserId = s.PlannerTask.AssigneeId });
 
             foreach (var group in groupedByUserAndDay)
             {
@@ -154,30 +164,22 @@ namespace HouseholdPlanner.Pages
 
                     var end = start.Add(duration);
 
-                    // Overlap: any other block that intersects this one's [start, end)
+                    // Overlap detection
                     var hasOverlap = ordered.Any(other =>
                         other.Id != schedule.Id &&
                         other.StartLocalTime < end &&
                         other.StartLocalTime.Add(other.AmountOfTime) > start);
 
-                    // 06:00 => index 0, each index = 30 minutes
+                    // Compute half-hour slot index
                     var startMinutesFromSix = (start.Hour - 6) * 60 + start.Minute;
                     var halfHourIndex = startMinutesFromSix / 30;
+                    halfHourIndex = Math.Clamp(halfHourIndex, 0, 31);
 
-                    if (halfHourIndex < 0)
-                    {
-                        halfHourIndex = 0;
-                    }
-                    else if (halfHourIndex > 31)
-                    {
-                        halfHourIndex = 31;
-                    }
-
-                    var span = Math.Max(
-                        1,
+                    // Duration in half-hours
+                    var span = Math.Max(1,
                         (int)Math.Round(duration.TotalMinutes / 30.0, MidpointRounding.AwayFromZero));
 
-                    // Clamp span so it doesn't blow past the 32 rows
+                    // Clamp to end of grid
                     if (halfHourIndex + span > 32)
                     {
                         span = 32 - halfHourIndex;
@@ -208,7 +210,6 @@ namespace HouseholdPlanner.Pages
             var delta = today.DayOfWeek == DayOfWeek.Sunday
                 ? -6
                 : DayOfWeek.Monday - today.DayOfWeek;
-
             return today.AddDays(delta);
         }
     }

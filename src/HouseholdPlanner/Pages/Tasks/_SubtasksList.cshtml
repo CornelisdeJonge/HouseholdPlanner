@@ -20,7 +20,7 @@
                                 <input type="hidden" name="subtaskId" value="@sub.Id" />
                                 <input type="checkbox"
                                        class="h-5 w-5 rounded"
-                                       @(sub.IsDone ? "checked" : "")
+                                @(sub.IsDone ? "checked" : "")
                                        hx-post="?handler=ToggleSubtask"
                                        hx-trigger="change"
                                        hx-include="closest form"
@@ -48,7 +48,13 @@
                 </ul>
             }
 
-            <form method="post" asp-page-handler="AddSubtask" class="mt-4 flex items-center gap-2">
+            <!-- ✅ Add subtask via HTMX partial refresh -->
+            <form method="post"
+                  asp-page-handler="AddSubtask"
+                  class="mt-4 flex items-center gap-2"
+                  hx-post="?handler=AddSubtask"
+                  hx-target="#subtasks-list"
+                  hx-swap="outerHTML">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
 

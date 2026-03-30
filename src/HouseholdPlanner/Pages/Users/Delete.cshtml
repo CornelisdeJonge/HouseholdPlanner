@@ -11,7 +11,7 @@
     </h1>
 
     <p class="text-muted text-sm">
-        Are you sure you want to delete this user? This may affect task assignments and availability.
+        Are you sure you want to delete this user? Any tasks currently assigned to them will remain, but will be unassigned.
     </p>
 
     <section class="panel">
@@ -57,11 +57,54 @@
         </div>
     </section>
 
+    @if (Model.AssignedTasks != null && Model.AssignedTasks.Any())
+    {
+        <section class="panel">
+            <div class="panel-body text-sm space-y-3">
+                <h2 class="font-semibold text-sm">
+                    Tasks that will be unassigned
+                </h2>
+
+                <p class="text-muted text-xs">
+                    The following tasks are currently assigned to this user. They will stay in the system, but their assignee will be cleared.
+                </p>
+
+                <div class="table-wrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Task</th>
+                                <th scope="col">Priority</th>
+                                <th scope="col">Deadline</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var task in Model.AssignedTasks)
+                            {
+                                <tr>
+                                    <td>@task.Name</td>
+                                    <td>@task.Priority</td>
+                                    <td>@(task.Deadline?.ToString("yyyy-MM-dd") ?? "—")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <p class="text-muted text-xs">
+            This user has no tasks assigned. Deleting them will not affect any task assignments.
+        </p>
+    }
+
     <form method="post" class="flex items-center gap-3">
         @Html.AntiForgeryToken()
 
         <button type="submit" class="btn btn-danger">
-            Yes, delete user
+            Yes, delete user and unassign tasks
         </button>
 
         <a asp-page="Index" class="btn btn-secondary">

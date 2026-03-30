@@ -78,17 +78,8 @@ namespace HouseholdPlanner.Pages.Tasks
             await db.SaveChangesAsync();
             return new EmptyResult();
         }
-
         public async Task<IActionResult> OnPostAddSubtaskAsync(int id, string newSubtaskTitle)
         {
-            // For this handler, we only care about the new subtask title.
-            ModelState.Clear();
-
-            if (string.IsNullOrWhiteSpace(newSubtaskTitle))
-            {
-                ModelState.AddModelError("NewSubtaskTitle", "Subtask title is required.");
-            }
-
             var task = await db.PlannerTasks
                 .Include(t => t.Subtasks)
                 .FirstOrDefaultAsync(t => t.Id == id);
@@ -98,23 +89,25 @@ namespace HouseholdPlanner.Pages.Tasks
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
+            if (!string.IsNullOrWhiteSpace(newSubtaskTitle))
             {
-                TaskItem = task;
-                await LoadUserOptionsAsync();
-                return Page();
+                db.Subtasks.Add(new Subtask
+                {
+                    PlannerTaskId = task.Id,
+                    Name = newSubtaskTitle.Trim(),
+                    IsDone = false
+                });
+
+                await db.SaveChangesAsync();
+
+                // Reload to ensure we have the latest subtasks
+                task = await db.PlannerTasks
+                    .Include(t => t.Subtasks)
+                    .FirstOrDefaultAsync(t => t.Id == id);
             }
 
-            db.Subtasks.Add(new Subtask
-            {
-                PlannerTaskId = task.Id,
-                Name = newSubtaskTitle.Trim(),
-                IsDone = false
-            });
-
-            await db.SaveChangesAsync();
-
-            return RedirectToPage(new { id });
+            // Return updated subtasks list (even if title was empty – just no changes)
+            return Partial("_SubtasksList", task!);
         }
         public async Task<IActionResult> OnPostToggleSubtaskAsync(int subtaskId)
         {
@@ -133,7 +126,12 @@ namespace HouseholdPlanner.Pages.Tasks
                 .Include(t => t.Subtasks)
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
-            return Partial("_SubtasksList", task!);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return Partial("_SubtasksList", task);
         }
         public async Task<IActionResult> OnPostDeleteSubtaskAsync(int subtaskId)
         {
@@ -161,7 +159,6 @@ namespace HouseholdPlanner.Pages.Tasks
             // Return only the subtasks section for HTMX to swap in
             return Partial("_SubtasksList", task);
         }
-
         private async Task LoadUserOptionsAsync()
         {
             var users = await db.Users
