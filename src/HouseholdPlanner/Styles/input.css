@@ -314,8 +314,8 @@ body {
 }
 
 .schedule-block--overlap {
-    border-color: color-mix( in srgb, var(--planner-border-subtle) 90%, var(--color-bg));
-    background-color: color-mix( in srgb, var(--planner-border-subtle) 60%, var(--color-bg));
+    border-color: color-mix( in srgb, var(--color-text) 70%, var(--color-bg));
+    background-color: color-mix( in srgb, var(--color-text-muted) 80%, var(--color-bg));
     opacity: 0.9;
     position: absolute;
     z-index: 10;

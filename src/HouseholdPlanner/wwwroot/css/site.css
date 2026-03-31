@@ -320,6 +320,9 @@
   .w-full {
     width: 100%;
   }
+  .max-w-\[75px\] {
+    max-width: 75px;
+  }
   .max-w-xl {
     max-width: var(--container-xl);
   }
@@ -334,6 +337,12 @@
   }
   .grid-cols-8 {
     grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .grid-cols-\[minmax\(36px\,60px\)_repeat\(7\,1fr\)\] {
+    grid-template-columns: minmax(36px,60px) repeat(7,1fr);
+  }
+  .grid-cols-\[minmax\(50px\,75px\)_repeat\(7\,1fr\)\] {
+    grid-template-columns: minmax(50px,75px) repeat(7,1fr);
   }
   .flex-col {
     flex-direction: column;
@@ -661,6 +670,11 @@
   .lg\:grid-cols-\[minmax\(0\,3fr\)_minmax\(0\,1\.5fr\)\] {
     @media (width >= 64rem) {
       grid-template-columns: minmax(0,3fr) minmax(0,1.5fr);
+    }
+  }
+  .lg\:grid-cols-\[minmax\(0\,3fr\)_minmax\(0\,1fr\)\] {
+    @media (width >= 64rem) {
+      grid-template-columns: minmax(0,3fr) minmax(0,1fr);
     }
   }
   .dark\:border-slate-700 {
@@ -1023,13 +1037,13 @@ body {
   white-space: nowrap;
 }
 .schedule-block--overlap {
-  border-color: var(--planner-border-subtle);
+  border-color: var(--color-text);
   @supports (color: color-mix(in lab, red, red)) {
-    border-color: color-mix( in srgb, var(--planner-border-subtle) 90%, var(--color-bg));
+    border-color: color-mix( in srgb, var(--color-text) 70%, var(--color-bg));
   }
-  background-color: var(--planner-border-subtle);
+  background-color: var(--color-text-muted);
   @supports (color: color-mix(in lab, red, red)) {
-    background-color: color-mix( in srgb, var(--planner-border-subtle) 60%, var(--color-bg));
+    background-color: color-mix( in srgb, var(--color-text-muted) 80%, var(--color-bg));
   }
   opacity: 0.9;
   position: absolute;
