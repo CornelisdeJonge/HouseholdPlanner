@@ -12,7 +12,6 @@ namespace HouseholdPlanner.Pages.Schedules
     {
         [BindProperty]
         public InputModel Input { get; set; } = new();
-
         public string TaskName { get; private set; } = string.Empty;
         public string? AssigneeDisplay { get; private set; }
 
@@ -144,8 +143,6 @@ namespace HouseholdPlanner.Pages.Schedules
 
             return new TimeOnly(hour, minute);
         }
-
-
         private static int NormalizeDuration(int requestedMinutes)
         {
             if (requestedMinutes <= 0)

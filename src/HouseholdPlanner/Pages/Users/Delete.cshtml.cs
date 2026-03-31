@@ -7,15 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseholdPlanner.Pages.Users
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel(PlannerDbContext context) : PageModel
     {
-        private readonly PlannerDbContext _context;
-
-        public DeleteModel(PlannerDbContext context)
-        {
-            _context = context;
-        }
-
         [BindProperty]
         public PlannerUser PlannerUser { get; set; } = null!;
 
@@ -23,7 +16,7 @@ namespace HouseholdPlanner.Pages.Users
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
 
@@ -34,7 +27,7 @@ namespace HouseholdPlanner.Pages.Users
 
             PlannerUser = user;
 
-            AssignedTasks = await _context.PlannerTasks
+            AssignedTasks = await context.PlannerTasks
                 .AsNoTracking()
                 .Where(t => t.AssigneeId == id)
                 .OrderBy(t => t.Deadline)
@@ -46,7 +39,7 @@ namespace HouseholdPlanner.Pages.Users
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var user = await _context.Users
+            var user = await context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -55,7 +48,7 @@ namespace HouseholdPlanner.Pages.Users
             }
 
             // Unassign all tasks that are currently assigned to this user
-            var tasks = await _context.PlannerTasks
+            var tasks = await context.PlannerTasks
                 .Where(t => t.AssigneeId == id)
                 .ToListAsync();
 
@@ -64,9 +57,9 @@ namespace HouseholdPlanner.Pages.Users
                 task.AssigneeId = null;
             }
 
-            _context.Users.Remove(user);
+            context.Users.Remove(user);
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return RedirectToPage("Index");
         }

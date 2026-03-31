@@ -1,4 +1,4 @@
-﻿@model HouseholdPlanner.Pages.Schedules.CreateModel
+﻿@model HouseholdPlanner.Models.ScheduleModel
 
 <div class="space-y-1">
     <label asp-for="Input.StartLocalTime" class="label"></label>
@@ -35,22 +35,3 @@
 
     <span asp-validation-for="Input.StartLocalTime" class="validation text-xs"></span>
 </div>
-
-@section Scripts {
-    <script>
-        (function () {
-            const hour = document.getElementsByName("StartLocalTime_Hour")[0];
-            const minute = document.getElementsByName("StartLocalTime_Minute")[0];
-            const hidden = document.getElementById("hiddenStartLocalTime");
-
-            function updateHidden() {
-                hidden.value = `${hour.value}:${minute.value}`;
-            }
-
-            hour.addEventListener("change", updateHidden);
-            minute.addEventListener("change", updateHidden);
-
-            updateHidden();
-        })();
-    </script>
-}

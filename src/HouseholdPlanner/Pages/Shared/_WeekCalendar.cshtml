@@ -52,21 +52,14 @@
             </a>
         </div>
     </div>
-
-    <!-- SECOND ROW: Date range -->
-    <div>
-        <p class="text-muted text-sm">
-            @Model.WeekStart.ToString("dd MMM yyyy") – @Model.WeekEnd.ToString("dd MMM yyyy")
-        </p>
-    </div>
 </div>
 
 <!-- WEEK CALENDAR GRID -->
-<div class="week-grid border rounded overflow-hidden mt-4">
+<div class="week-grid border rounded overflow-hidden mt-1">
     <div class="grid grid-cols-8">
 
         <!-- TIME COLUMN -->
-        <div class="border-r">
+        <div class="border-r min-w-0">
             <!-- "DAY" HEADER -->
             <div class="border-b px-1 py-1 text-center h-[49px]"></div>
 
@@ -83,11 +76,11 @@
         {
             var dayBlocks = Model.ScheduleBlocks
                 .Where(b => b.Date == day)
-                .OrderBy(b => b.StartHalfHourIndex)
+                .OrderBy(b => b.StartTimeIndex)
                 .ToList();
 
-            var totalRows = Model.HourSlots.Count * 2;
-            var rowHeightPx = 24; // each 30-min slot
+            var totalRows = Model.HourSlots.Count * 4;
+            var rowHeightPx = 12; // each 15-min slot
 
             <div class="border-r last:border-r-0 min-w-0">
 
@@ -101,89 +94,114 @@
                 <div class="relative" style="height:@(totalRows* rowHeightPx)px;">
 
                     <!-- Background rows (hour lines every 60 minutes) -->
-                    @for (var i = 0; i < totalRows; i++)
+                    @for (var l = 0; l < totalRows; l++)
                     {
-                        bool isHourLine = i % 2 == 0; // every full hour
-                        <div class="@(isHourLine ? "border-t" : "") h-[24px] w-full background-row"></div>
+                        bool isHourLine = l % 4 == 0; // every full hour
+                        <div class="@(isHourLine ? "border-t" : "") w-full background-row" style="height:@(rowHeightPx)px;"></div>
                     }
 
-                    @* Overlay: schedule blocks *@
+                    @* Overlay: schedule blocks (segmented by overlap) *@
                     @{
-                        // Keep track of which blocks we've already rendered (so we don't render them once per row)
-                        var renderedBlockIds = new System.Collections.Generic.HashSet<int>();
+                        int i = 0;
 
-                        for (var i = 0; i < totalRows; i++)
+                        // Helper to get active blocks at a given row index
+                        List<IndexModel.TaskScheduleBlockViewModel> GetActiveBlocks(int rowIndex) => dayBlocks
+                            .Where(b => b.StartTimeIndex <= rowIndex &&
+                                        (b.StartTimeIndex + b.BlockSpan) > rowIndex)
+                            .OrderBy(b => b.StartTimeIndex)
+                            .ToList();
+
+                        // Helper to compare two block sets by ID
+                        bool SameSet(List<IndexModel.TaskScheduleBlockViewModel> a, List<IndexModel.TaskScheduleBlockViewModel> b)
                         {
-                            var overlapping = dayBlocks
-                                .Where(b =>
-                                    b.StartHalfHourIndex <= i &&
-                                    (b.StartHalfHourIndex + b.HalfHourSpan) > i)
-                                .ToList();
+                            if (a.Count != b.Count) return false;
+                            var aIds = a.Select(x => x.Id).OrderBy(id => id);
+                            var bIds = b.Select(x => x.Id).OrderBy(id => id);
+                            return aIds.SequenceEqual(bIds);
+                        }
+
+                        while (i < totalRows)
+                        {
+                            var overlapping = GetActiveBlocks(i);
+
+                            // No tasks at this row → skip
+                            if (!overlapping.Any())
+                            {
+                                i++;
+                                continue;
+                            }
+
+                            // Find the end of this segment (where the active set changes)
+                            var j = i + 1;
+                            while (j < totalRows)
+                            {
+                                var nextOverlapping = GetActiveBlocks(j);
+                                if (!SameSet(overlapping, nextOverlapping))
+                                {
+                                    break;
+                                }
+                                j++;
+                            }
+
+                            var spanBlocks = j - i;                      // how many rows in this segment
+                            var topPx = i * rowHeightPx;
+                            var heightPx = spanBlocks * rowHeightPx;
 
                             if (overlapping.Count == 1)
                             {
+                                // Single-task segment
                                 var block = overlapping[0];
 
-                                // Render this block only once at its start index
-                                if (renderedBlockIds.Contains(block.Id) || block.StartHalfHourIndex != i)
-                                {
-                                    continue;
-                                }
-
-                                renderedBlockIds.Add(block.Id);
-
-                                var halfHours = Math.Max(1, block.HalfHourSpan);
-                                var topPx = block.StartHalfHourIndex * rowHeightPx;
-                                var heightPx = halfHours * rowHeightPx;
+                                var blocks = Math.Max(1, spanBlocks);    // use segment length for display logic
 
                                 var borderColor = !string.IsNullOrEmpty(block.AssigneeColor)
                                     ? block.AssigneeColor
                                     : "var(--planner-border-subtle, rgba(148, 163, 184, 0.7))";
 
-                                var tooltip =
-                                    $"{block.TaskName} • {block.AssigneeName} • {block.StartLocalTime:HH\\:mm}–{block.StartLocalTime.Add(block.Duration):HH\\:mm}";
+                                var tooltip = $"{block.TaskName} • {block.AssigneeName} • {block.StartLocalTime:HH\\:mm}–{block.StartLocalTime.Add(block.Duration):HH\\:mm}";
 
                                 <a href="@Url.Page("/Schedules/Edit",
-                                        new
+                                    new
+                                    {
+                                        id = block.Id,
+                                        returnUrl = Url.Page("/Index", new
                                         {
-                                            id = block.Id,
-                                            returnUrl = Url.Page("/Index", new
-                                            {
-                                                weekStart = Model.WeekStart.ToString("yyyy-MM-dd"),
-                                                userId = Model.SelectedUserId
-                                            })
-                                        })"
-                                        class="schedule-block @(block.IsDoubleBooked ? "schedule-block--double-booked" : "")"
-                                        title="@tooltip"
-                                        style="
-                                        position:absolute;
-                                        top:@(topPx)px;
-                                        height:@(heightPx)px;
-                                        left:0;
-                                        right:0;
-                                        border-color:@borderColor;
-                                        overflow:hidden;">
-
+                                            weekStart = Model.WeekStart.ToString("yyyy-MM-dd"),
+                                            userId = Model.SelectedUserId
+                                        })
+                                    })"
+                                    class="schedule-block @(block.IsDoubleBooked ? "schedule-block--double-booked" : "")"
+                                    title="@tooltip"
+                                    style="
+                                    --user-chip-color:@borderColor;
+                                    position:absolute;
+                                    top:@(topPx)px;
+                                    height:@(heightPx)px;
+                                    left:0;
+                                    right:0;
+                                    border-color:@borderColor;
+                                    overflow:hidden;">
+                
                                     <!-- Title (always visible) -->
                                     <div class="schedule-block__title overflow-hidden text-ellipsis whitespace-nowrap"
-                                         title="@block.TaskName">
+                                         title="@tooltip">
                                         @block.TaskName
                                     </div>
 
                                     <!-- 60 min+: assignee -->
-                                    @if (halfHours >= 2 && !string.IsNullOrEmpty(block.AssigneeName))
+                                    @if (blocks >= 4 && !string.IsNullOrEmpty(block.AssigneeName))
                                     {
                                         <div class="schedule-block__meta text-muted text-xs overflow-hidden text-ellipsis whitespace-nowrap"
-                                             title="@block.AssigneeName">
+                                             title="@tooltip">
                                             @block.AssigneeName
                                         </div>
                                     }
 
                                     <!-- 90 min+: duration -->
-                                    @if (halfHours >= 3)
+                                    @if (blocks >= 6)
                                     {
                                         <div class="schedule-block__meta text-muted text-xs overflow-hidden text-ellipsis whitespace-nowrap"
-                                             title="@($"{block.StartLocalTime:HH\\:mm} – {block.StartLocalTime.Add(block.Duration):HH\\:mm}")">
+                                             title="@tooltip">
                                             @block.StartLocalTime.ToString("HH\\:mm")
                                             –
                                             @block.StartLocalTime.Add(block.Duration).ToString("HH\\:mm")
@@ -191,22 +209,9 @@
                                     }
                                 </a>
                             }
-                            else if (overlapping.Count > 1)
+                            else
                             {
-                                // Compute full overlap cluster span
-                                var overlapStart = overlapping.Min(b => b.StartHalfHourIndex);
-                                var overlapEnd = overlapping.Max(b => b.StartHalfHourIndex + b.HalfHourSpan);
-                                var overlapSpan = overlapEnd - overlapStart;
-
-                                // Render only once at the top of the cluster
-                                if (i != overlapStart)
-                                {
-                                    continue;
-                                }
-
-                                var topPx = overlapStart * rowHeightPx;
-                                var heightPx = overlapSpan * rowHeightPx;
-
+                                // Overlap segment (2+ tasks)
                                 var combinedTooltip = string.Join(" | ",
                                     overlapping.Select(b =>
                                         $"{b.TaskName} • {b.AssigneeName} • {b.StartLocalTime:HH\\:mm}–{b.StartLocalTime.Add(b.Duration):HH\\:mm}"));
@@ -224,10 +229,9 @@
                                     </div>
                                 </div>
                             }
-                            else
-                            {
-                                // no block in this slot → only background row applies
-                            }
+
+                            // Move to the next segment
+                            i = j;
                         }
                     }
                 </div>

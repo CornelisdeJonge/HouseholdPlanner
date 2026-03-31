@@ -12,8 +12,6 @@ namespace HouseholdPlanner.Pages.Schedules
     {
         [BindProperty]
         public InputModel Input { get; set; } = new();
-        [BindProperty]
-        public IndexModel Index { get; set; } = new(db);
         public string TaskName { get; private set; } = string.Empty;
         public string? AssigneeDisplay { get; private set; }
 
@@ -69,7 +67,7 @@ namespace HouseholdPlanner.Pages.Schedules
                 return NotFound();
             }
 
-            var snappedStart = SnapToHalfHour(Input.StartLocalTime);
+            var snappedStart = SnapToQuarterHour(Input.StartLocalTime);
             var durationMinutes = NormalizeDuration(Input.DurationMinutes);
             var duration = TimeSpan.FromMinutes(durationMinutes);
 
@@ -137,19 +135,21 @@ namespace HouseholdPlanner.Pages.Schedules
                 slot.EndLocalTime >= end);
         }
 
-        private static TimeOnly SnapToHalfHour(TimeOnly time)
+        private static TimeOnly SnapToQuarterHour(TimeOnly time)
         {
-            var minutes = time.Minute;
-            var snappedMinutes = minutes < 15 ? 0 : minutes < 45 ? 30 : 0;
-            var hour = time.Hour + (minutes >= 45 ? 1 : 0);
+            int totalMinutes = time.Hour * 60 + time.Minute;
 
-            if (hour >= 24)
-            {
-                hour = 23;
-                snappedMinutes = 30;
-            }
+            // Snap to nearest 15-minute block
+            int snappedMinutes = (int)(Math.Round(totalMinutes / 15.0) * 15);
 
-            return new TimeOnly(hour, snappedMinutes);
+            // Handle overflow past 24:00 (optional: clamp instead)
+            if (snappedMinutes >= 24 * 60)
+                snappedMinutes = 24 * 60 - 1; // 23:59 or adjust to 23:45 if preferred
+
+            int hour = snappedMinutes / 60;
+            int minute = snappedMinutes % 60;
+
+            return new TimeOnly(hour, minute);
         }
 
         private static int NormalizeDuration(int requestedMinutes)

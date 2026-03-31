@@ -41,8 +41,8 @@ namespace HouseholdPlanner.Pages
 
             public bool IsDoubleBooked { get; init; }
 
-            public int StartHalfHourIndex { get; init; }
-            public int HalfHourSpan { get; init; }
+            public int StartTimeIndex { get; init; }
+            public int BlockSpan { get; init; }
         }
 
         public async Task OnGetAsync(DateOnly? weekStart, int? userId)
@@ -143,7 +143,7 @@ namespace HouseholdPlanner.Pages
 
             var groupedByUserAndDay = schedules
                 .GroupBy(s => new { s.Date, UserId = s.PlannerTask.AssigneeId });
-
+            var totalBlocks = HourSlots.Count * 4;
             foreach (var group in groupedByUserAndDay)
             {
                 var ordered = group
@@ -170,19 +170,19 @@ namespace HouseholdPlanner.Pages
                         other.StartLocalTime < end &&
                         other.StartLocalTime.Add(other.AmountOfTime) > start);
 
-                    // Compute half-hour slot index
+                    // Compute block slot index
                     var startMinutesFromSix = (start.Hour - 6) * 60 + start.Minute;
-                    var halfHourIndex = startMinutesFromSix / 30;
-                    halfHourIndex = Math.Clamp(halfHourIndex, 0, 31);
+                    var BlockIndex = startMinutesFromSix / 15;
+                    BlockIndex = Math.Clamp(BlockIndex, 0, totalBlocks -1 );
 
-                    // Duration in half-hours
+                    // Duration in blocks (15-minute increments)
                     var span = Math.Max(1,
-                        (int)Math.Round(duration.TotalMinutes / 30.0, MidpointRounding.AwayFromZero));
+                        (int)Math.Round(duration.TotalMinutes / 15.0, MidpointRounding.AwayFromZero));
 
                     // Clamp to end of grid
-                    if (halfHourIndex + span > 32)
+                    if (BlockIndex + span > totalBlocks)
                     {
-                        span = 32 - halfHourIndex;
+                        span = totalBlocks - BlockIndex;
                     }
 
                     result.Add(new TaskScheduleBlockViewModel
@@ -195,8 +195,8 @@ namespace HouseholdPlanner.Pages
                         AssigneeName = schedule.PlannerTask.Assignee?.Name,
                         AssigneeColor = schedule.PlannerTask.Assignee?.Color,
                         IsDoubleBooked = hasOverlap,
-                        StartHalfHourIndex = halfHourIndex,
-                        HalfHourSpan = span
+                        StartTimeIndex = BlockIndex,
+                        BlockSpan = span
                     });
                 }
             }

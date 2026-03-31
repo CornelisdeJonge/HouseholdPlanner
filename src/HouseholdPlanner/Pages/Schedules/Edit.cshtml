@@ -1,5 +1,5 @@
 ﻿@page
-@model HouseholdPlanner.Pages.Schedules.EditModel
+@model HouseholdPlanner.Models.ScheduleModel
 
 @{
     ViewData["Title"] = "Edit planned time";
@@ -31,9 +31,7 @@
             </div>
 
             <div class="form-field">
-                <label asp-for="Input.StartLocalTime"></label>
-                <input asp-for="Input.StartLocalTime" type="time" class="input" step="1800" />
-                <span asp-validation-for="Input.StartLocalTime" class="validation text-xs"></span>
+                @await Html.PartialAsync("_TimePicker", Model)
             </div>
 
             <div class="form-field">
@@ -48,8 +46,8 @@
                 <a href="@Model.Input.ReturnUrl" class="btn btn-secondary">Cancel</a>
                 <a href="@Url.Page("/Schedules/Delete", new
                     {
-                        id = @Model.Input.Id,
-                        returnUrl = Url.Page("/Index", new{})
+                        id = Model.Input.Id,
+                        returnUrl = Model.Input.ReturnUrl
                     })" class="btn btn-secondary">Delete</a>
             </div>
         </form>
@@ -57,5 +55,20 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const hour = document.getElementsByName("StartLocalTime_Hour")[0];
+            const minute = document.getElementsByName("StartLocalTime_Minute")[0];
+            const hidden = document.getElementById("hiddenStartLocalTime");
+
+            function updateHidden() {
+                hidden.value = `${hour.value}:${minute.value}`;
+            }
+
+            hour.addEventListener("change", updateHidden);
+            minute.addEventListener("change", updateHidden);
+
+            updateHidden();
+        })();
+    </script>
 }

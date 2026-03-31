@@ -1,5 +1,5 @@
 ﻿@page
-@model HouseholdPlanner.Pages.Schedules.CreateModel
+@model HouseholdPlanner.Models.ScheduleModel
 @{
     ViewData["Title"] = "Plan task time";
 }
@@ -48,5 +48,20 @@
 </div>
 </section>
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const hour = document.getElementsByName("StartLocalTime_Hour")[0];
+            const minute = document.getElementsByName("StartLocalTime_Minute")[0];
+            const hidden = document.getElementById("hiddenStartLocalTime");
+
+            function updateHidden() {
+                hidden.value = `${hour.value}:${minute.value}`;
+            }
+
+            hour.addEventListener("change", updateHidden);
+            minute.addEventListener("change", updateHidden);
+
+            updateHidden();
+        })();
+    </script>
 }

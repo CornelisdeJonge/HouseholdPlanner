@@ -44,8 +44,8 @@ namespace HouseholdPlanner.Models
         public bool IsDoubleBooked { get; init; }
 
         // For grid placement (06:00–22:00, 30-minute rows)
-        public int StartHalfHourIndex { get; init; }
-        public int HalfHourSpan { get; init; }
+        public int StartBlockIndex { get; init; }
+        public int AmountOfBlocks { get; init; }
     }
 
 }

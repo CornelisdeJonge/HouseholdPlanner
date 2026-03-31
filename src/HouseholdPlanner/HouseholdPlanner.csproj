@@ -19,6 +19,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Pages\Schedules\Create.cshtml.cs" />
+	  <Compile Remove="Pages\Schedules\Edit.cshtml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Pages\Schedules\Create.cshtml.cs" />
+	  <None Include="Pages\Schedules\Edit.cshtml.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="AspNetCore.Health" Version="2.0.1" />
 		<PackageReference Include="CoreFtp" Version="2.2.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />

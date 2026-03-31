@@ -299,9 +299,6 @@
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
-  .h-\[24px\] {
-    height: 24px;
-  }
   .h-\[49px\] {
     height: 49px;
   }
@@ -760,13 +757,12 @@ body {
 }
 .app-header-inner {
   margin-inline: auto;
-  display: flex;
   max-width: var(--container-7xl);
   align-items: center;
   justify-content: space-between;
   gap: calc(var(--spacing) * 4);
-  padding-inline: calc(var(--spacing) * 6);
-  padding-block: calc(var(--spacing) * 4);
+  padding-inline: calc(var(--spacing) * 2);
+  padding-block: calc(var(--spacing) * 2);
 }
 .app-main {
   margin-inline: auto;
@@ -802,7 +798,7 @@ body {
   color: var(--color-text);
 }
 .panel-body {
-  padding: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 2);
 }
 .btn {
   display: inline-flex;
@@ -997,14 +993,20 @@ body {
   border-width: 2px;
   border-style: solid;
   border-radius: 4px;
-  background-color: var(--planner-schedule-bg, rgba(148, 163, 184, 0.08));
+  background-color: var(--user-chip-color);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix( in srgb, var(--user-chip-color) 10%, var(--color-bg));
+  }
   cursor: pointer;
   overflow: hidden;
   transition: background-color 0.15s ease, border-color 0.15s ease;
   z-index: 10;
 }
 .schedule-block:hover {
-  background-color: var(--planner-schedule-hover-bg, rgba(148, 163, 184, 0.15));
+  background-color: var(--user-chip-color);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix( in srgb, var(--user-chip-color) 30%, var(--color-bg));
+  }
   z-index: 11;
 }
 .schedule-block__title {
@@ -1021,8 +1023,14 @@ body {
   white-space: nowrap;
 }
 .schedule-block--overlap {
-  border-color: var(--planner-border-subtle, rgba(148, 163, 184, 0.7));
-  background-color: var(--color-surface, #ffffff);
+  border-color: var(--planner-border-subtle);
+  @supports (color: color-mix(in lab, red, red)) {
+    border-color: color-mix( in srgb, var(--planner-border-subtle) 90%, var(--color-bg));
+  }
+  background-color: var(--planner-border-subtle);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix( in srgb, var(--planner-border-subtle) 60%, var(--color-bg));
+  }
   opacity: 0.9;
   position: absolute;
   z-index: 10;

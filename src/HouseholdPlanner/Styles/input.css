@@ -90,7 +90,7 @@ body {
 }
 
 .app-header-inner {
-    @apply mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4;
+    @apply mx-auto max-w-7xl items-center justify-between gap-4 px-2 py-2;
 }
 
 .app-main {
@@ -126,7 +126,7 @@ body {
 }
 
 .panel-body {
-    @apply p-6;
+    @apply p-2;
 }
 
 /* ===============================
@@ -182,17 +182,17 @@ body {
     border-color: var(--color-input-border);
 }
 
-    .input::placeholder,
-    .textarea::placeholder {
-        color: var(--color-text-muted);
-    }
+.input::placeholder,
+.textarea::placeholder {
+    color: var(--color-text-muted);
+}
 
-    .input:focus,
-    .select:focus,
-    .textarea:focus {
-        border-color: var(--color-input-border-focus);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
-    }
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: var(--color-input-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
+}
 
 .validation {
     @apply mt-1 block text-sm;
@@ -260,14 +260,14 @@ body {
     appearance: none;
 }
 
-    .form-select::placeholder {
-        color: var(--color-text-muted);
-    }
+.form-select::placeholder {
+    color: var(--color-text-muted);
+}
 
-    .form-select:focus {
-        border-color: var(--color-input-border-focus);
-        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
-    }
+.form-select:focus {
+    border-color: var(--color-input-border-focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-input-border-focus) 25%, transparent);
+}
 
 /* ===============================
    SCHEDULE BLOCKS (Calendar Grid)
@@ -286,7 +286,7 @@ body {
     border-width: 2px;
     border-style: solid;
     border-radius: 4px;
-    background-color: var(--planner-schedule-bg, rgba(148, 163, 184, 0.08));
+    background-color: color-mix( in srgb, var(--user-chip-color) 10%, var(--color-bg));
     cursor: pointer;
     overflow: hidden;
     transition: background-color 0.15s ease, border-color 0.15s ease;
@@ -294,7 +294,7 @@ body {
 }
 
 .schedule-block:hover {
-    background-color: var(--planner-schedule-hover-bg, rgba(148, 163, 184, 0.15));
+    background-color: color-mix( in srgb, var(--user-chip-color) 30%, var(--color-bg));
     z-index: 11;
 }
 
@@ -314,8 +314,8 @@ body {
 }
 
 .schedule-block--overlap {
-    border-color: var(--planner-border-subtle, rgba(148, 163, 184, 0.7));
-    background-color: var(--color-surface, #ffffff);
+    border-color: color-mix( in srgb, var(--planner-border-subtle) 90%, var(--color-bg));
+    background-color: color-mix( in srgb, var(--planner-border-subtle) 60%, var(--color-bg));
     opacity: 0.9;
     position: absolute;
     z-index: 10;
