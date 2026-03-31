@@ -1,0 +1,56 @@
+﻿@model HouseholdPlanner.Pages.Schedules.CreateModel
+
+<div class="space-y-1">
+    <label asp-for="Input.StartLocalTime" class="label"></label>
+
+    <div class="flex gap-2">
+        <!-- Hours -->
+        <select name="StartLocalTime_Hour" class="input w-20">
+            @for (int h = 0; h < 24; h++)
+            {
+                var hourVal = h.ToString("D2");
+                var selected = Model.Input.StartLocalTime.Hour.ToString("D2");
+                <option value="@hourVal" selected="@(hourVal == selected)">
+                    @hourVal
+                </option>
+            }
+        </select>
+
+        <!-- Minutes -->
+        <select name="StartLocalTime_Minute" class="input w-20">
+            @{
+                var allowed = new[] { "00", "15", "30", "45" };
+                var selectedMin = Model.Input.StartLocalTime.Minute.ToString("D2");
+                if (!allowed.Contains(selectedMin)) selectedMin = "00";
+            }
+            @foreach (var m in allowed)
+            {
+                <option value="@m" selected="@(m == selectedMin)">@m</option>
+            }
+        </select>
+    </div>
+
+    <!-- Hidden input bound to the model -->
+    <input type="hidden" asp-for="Input.StartLocalTime" id="hiddenStartLocalTime" />
+
+    <span asp-validation-for="Input.StartLocalTime" class="validation text-xs"></span>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const hour = document.getElementsByName("StartLocalTime_Hour")[0];
+            const minute = document.getElementsByName("StartLocalTime_Minute")[0];
+            const hidden = document.getElementById("hiddenStartLocalTime");
+
+            function updateHidden() {
+                hidden.value = `${hour.value}:${minute.value}`;
+            }
+
+            hour.addEventListener("change", updateHidden);
+            minute.addEventListener("change", updateHidden);
+
+            updateHidden();
+        })();
+    </script>
+}

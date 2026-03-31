@@ -12,7 +12,8 @@ namespace HouseholdPlanner.Pages.Schedules
     {
         [BindProperty]
         public InputModel Input { get; set; } = new();
-
+        [BindProperty]
+        public IndexModel Index { get; set; } = new(db);
         public string TaskName { get; private set; } = string.Empty;
         public string? AssigneeDisplay { get; private set; }
 

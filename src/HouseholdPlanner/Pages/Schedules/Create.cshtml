@@ -1,6 +1,5 @@
 ﻿@page
 @model HouseholdPlanner.Pages.Schedules.CreateModel
-
 @{
     ViewData["Title"] = "Plan task time";
 }
@@ -30,9 +29,7 @@
         </div>
 
         <div class="space-y-1">
-            <label asp-for="Input.StartLocalTime" class="label"></label>
-            <input asp-for="Input.StartLocalTime" type="time" class="input" step="1800" />
-            <span asp-validation-for="Input.StartLocalTime" class="validation text-xs"></span>
+            @await Html.PartialAsync("_TimePicker", Model)
         </div>
 
         <div class="space-y-1">

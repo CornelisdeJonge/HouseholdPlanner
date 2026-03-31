@@ -26,26 +26,31 @@
 
             <div class="form-field">
                 <label asp-for="Input.Date"></label>
-                <input asp-for="Input.Date" type="date" class="form-input" />
-                <span asp-validation-for="Input.Date" class="text-validation"></span>
+                <input asp-for="Input.Date" type="date" class="input" />
+                <span asp-validation-for="Input.Date" class="validation text-xs"></span>
             </div>
 
             <div class="form-field">
                 <label asp-for="Input.StartLocalTime"></label>
-                <input asp-for="Input.StartLocalTime" type="time" class="form-input" step="1800" />
-                <span asp-validation-for="Input.StartLocalTime" class="text-validation"></span>
+                <input asp-for="Input.StartLocalTime" type="time" class="input" step="1800" />
+                <span asp-validation-for="Input.StartLocalTime" class="validation text-xs"></span>
             </div>
 
             <div class="form-field">
                 <label asp-for="Input.DurationMinutes"></label>
-                <input asp-for="Input.DurationMinutes" type="number" class="form-input" min="30" step="30" />
+                <input asp-for="Input.DurationMinutes" type="number" class="input" min="30" step="30" />
                 <p class="text-muted text-sm">Duration is rounded to 30-minute steps.</p>
-                <span asp-validation-for="Input.DurationMinutes" class="text-validation"></span>
+                <span asp-validation-for="Input.DurationMinutes" class="validation text-xs"></span>
             </div>
 
             <div class="mt-4 flex gap-2">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="@Model.Input.ReturnUrl" class="btn btn-secondary">Cancel</a>
+                <a href="@Url.Page("/Schedules/Delete", new
+                    {
+                        id = @Model.Input.Id,
+                        returnUrl = Url.Page("/Index", new{})
+                    })" class="btn btn-secondary">Delete</a>
             </div>
         </form>
     </div>
